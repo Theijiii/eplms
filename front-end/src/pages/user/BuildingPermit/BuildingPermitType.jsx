@@ -1,0 +1,213 @@
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { ArrowRight, ArrowLeft } from "lucide-react";
+
+export default function BuildingPermitType({ building_permit_id }) {
+  const [selectedType, setSelectedType] = useState('');
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
+  const navigate = useNavigate();
+
+  const permit_type = [
+    { id: 'NEW', title: 'NEW', description: 'Apply for a new building permit', color: 'bg-green-500 hover:bg-green-600' },
+    { id: 'RENEWAL', title: 'RENEWAL', description: 'Renew your existing building permit', color: 'bg-blue-500 hover:bg-blue-600' },
+    { id: 'ELECTRICAL', title: 'Electrical', description: 'Electrical works', color: 'bg-yellow-500 hover:bg-yellow-600' },
+    { id: 'MECHANICAL', title: 'Mechanical', description: 'Mechanical works', color: 'bg-red-500 hover:bg-red-600' },
+    { id: 'PLUMBING', title: 'Plumbing', description: 'Sanitary/Plumbing works', color: 'bg-teal-500 hover:bg-teal-600' },
+    { id: 'FENCING', title: 'Fencing', description: 'Fencing works', color: 'bg-purple-500 hover:bg-purple-600' },
+    { id: 'DEMOLITION', title: 'Demolition', description: 'Demolition works', color: 'bg-gray-500 hover:bg-gray-600' },
+    { id: 'EXCAVATION', title: 'Excavation/Grading', description: 'Excavation and grading works', color: 'bg-indigo-500 hover:bg-indigo-600' },
+    { id: 'OCCUPANCY', title: 'Occupancy', description: 'Occupancy permit', color: 'bg-pink-500 hover:bg-pink-600' },
+    { id: 'ELECTRONICS', title: 'Electronics', description: 'Electronics works', color: 'bg-blue-500 hover:bg-blue-600' },
+    { id: 'SIGNAGE', title: 'Signage', description: 'Signage works', color: 'bg-lime-500 hover:bg-lime-600' },
+  ];
+
+  const handleTypeSelection = (typeId) => {
+    // 🔹 Commented out condition (can re-enable later)
+    /*
+    if (!building_permit_id && typeId !== 'NEW') {
+      setIsConfirmModalOpen(true);
+      return;
+    }
+    */
+    setSelectedType(typeId);
+    setIsModalOpen(true);
+  };
+
+  const handleContinue = () => {
+    setIsModalOpen(false);
+
+    const routeMap = {
+      NEW: '/user/building/new',
+      RENEWAL: '/user/building/renewal',
+      ELECTRICAL: '/user/building/electrical',
+      MECHANICAL: '/user/building/mechanical',
+      PLUMBING: '/user/building/plumbing',
+      FENCING: '/user/building/fencing',
+      DEMOLITION: '/user/building/demolition',
+      EXCAVATION: '/user/building/excavation',
+      OCCUPANCY: '/user/building/occupancy',
+      ELECTRONICS: '/user/building/electronics',
+      SIGNAGE: '/user/building/signage',
+    };
+
+    navigate(routeMap[selectedType] || '/user/building/new', {
+      state: { permitType: selectedType },
+    });
+  };
+
+  const handleConfirmYes = () => {
+    setIsConfirmModalOpen(false);
+    navigate('/user/building/new', { state: { permitType: 'NEW' } });
+  };
+
+  const handleConfirmNo = () => {
+    setIsConfirmModalOpen(false);
+  };
+
+  return (
+    <div className="mx-1 mt-1 p-6 dark:bg-slate-900 bg-white dark:text-slate-300 rounded-lg min-h-screen">
+      <h1 className="text-2xl md:text-4xl font-bold mb-8 text-center">
+        Building Permit Types
+      </h1>
+      <p className="mb-6 text-center">
+        Please select the type of Building permit you need to apply for
+      </p>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full mt-6">
+        {permit_type.map((type) => (
+          <div
+            key={type.id}
+            onClick={() => handleTypeSelection(type.id)}
+            className="cursor-pointer rounded-lg border border-secondary px-5 py-4 transition-colors shadow-lg flex flex-col justify-between h-full"
+            style={{ background: '#fbfbfb', color: '#222', borderColor: '#9aa5b1' }}
+            onMouseOver={e => {
+              e.currentTarget.style.background = '#4a90e2';
+              e.currentTarget.style.color = '#222';
+              e.currentTarget.style.borderColor = '#4a90e2';
+            }}
+            onMouseOut={e => {
+              e.currentTarget.style.background = '#fbfbfb';
+              e.currentTarget.style.color = '#222';
+              e.currentTarget.style.borderColor = '#9aa5b1';
+            }}
+          >
+            <h2 className="mb-3 text-2xl font-semibold flex items-center justify-between" style={{ color: '#222' }}>
+              {type.title}
+              <ArrowRight className="ml-2 w-5 h-5 transition-transform group-hover:translate-x-1 motion-reduce:transform-none" />
+            </h2>
+            <p className="m-0 max-w-[30ch] text-sm opacity-70" style={{ color: '#222' }}>{type.description}</p>
+          </div>
+        ))}
+
+        {/* Professional Registration Box */}
+        <div
+          className="cursor-pointer rounded-lg border border-secondary px-5 py-4 transition-colors shadow-lg flex flex-col justify-between h-full"
+          style={{ background: '#fbfbfb', color: '#222', borderColor: '#9aa5b1' }}
+          onMouseOver={e => {
+            e.currentTarget.style.background = '#4a90e2';
+            e.currentTarget.style.color = '#222';
+            e.currentTarget.style.borderColor = '#4a90e2';
+          }}
+          onMouseOut={e => {
+            e.currentTarget.style.background = '#fbfbfb';
+            e.currentTarget.style.color = '#222';
+            e.currentTarget.style.borderColor = '#9aa5b1';
+          }}
+          onClick={() => navigate('/user/professionalregistration')}
+        >
+          <h2 className="mb-3 text-2xl font-semibold flex items-center justify-between" style={{ color: '#222' }}>
+            Register Professional/Engineer
+            <ArrowRight className="ml-2 w-5 h-5 transition-transform group-hover:translate-x-1 motion-reduce:transform-none" />
+          </h2>
+          <p className="m-0 max-w-[30ch] text-sm opacity-70" style={{ color: '#222' }}>
+            Register yourself as a professional or engineer to be available for building projects.
+          </p>
+        </div>
+      </div>
+
+      {/* ✅ Selection Modal */}
+      {isModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-[1px]">
+          <div className="bg-white dark:bg-slate-800 rounded-lg shadow-xl max-w-md w-full p-6">
+            <h3 className="text-xl font-semibold mb-2">Selected Permit Type</h3>
+            <p className="text-gray-600 dark:text-slate-300 mb-4">
+              You have selected:{" "}
+              <span className="font-bold text-blue-600">
+                {permit_type.find(t => t.id === selectedType)?.title}
+              </span>
+            </p>
+            <p className="text-sm text-gray-500 dark:text-slate-400 mb-6">
+              {permit_type.find(t => t.id === selectedType)?.description}
+            </p>
+
+            <div className="flex justify-end gap-4">
+              <button
+                onClick={() => setIsModalOpen(false)}
+                className="bg-gray-300 text-gray-800 font-semibold py-2 px-4 rounded-lg transition"
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = "#FDA811";
+                  e.currentTarget.style.color = "#FFFFFF";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = "#D1D5DB";
+                  e.currentTarget.style.color = "#1F2937";
+                }}
+              >
+                Cancel
+              </button>
+
+              <button
+                onClick={handleContinue}
+                className="text-white font-semibold py-2 px-4 rounded-lg transition"
+                style={{ backgroundColor: "#4CAF50" }}
+                onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "#FDA811")}
+                onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "#4CAF50")}
+              >
+                Continue
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ✅ Confirmation Modal (Commented Out for Now) */}
+      {/*
+      {isConfirmModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-[1px]">
+          <div className="bg-white dark:bg-slate-800 rounded-lg shadow-xl max-w-md w-full p-6">
+            <h3 className="text-xl font-semibold mb-4">No Existing Building Permit</h3>
+            <p className="text-gray-600 dark:text-slate-300 mb-6">
+              You must apply for a NEW Building Permit first. Do you want to apply now?
+            </p>
+            <div className="flex justify-end gap-4">
+              <button
+                onClick={handleConfirmNo}
+                className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-2 px-4 rounded-lg"
+              >
+                No
+              </button>
+              <button
+                onClick={handleConfirmYes}
+                className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg"
+              >
+                Yes
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      */}
+
+      <div className="mt-8 text-center">
+        <button
+          onClick={() => navigate('/user/dashboard')}
+          className="inline-flex items-center gap-2 text-gray-500 dark:text-slate-400 hover:text-gray-700 dark:hover:text-slate-300 underline"
+        >
+          <ArrowLeft size={18} />
+          Back to Dashboard
+        </button>
+      </div>
+    </div>
+  );
+}
