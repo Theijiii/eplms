@@ -206,7 +206,7 @@ export default function Login() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50 relative overflow-hidden">
       {/* Background Image with Low Opacity */}
-      <div className="fixed inset-0 z-0 bg-[url('/GovServePH.png')] bg-center bg-cover bg-no-repeat opacity-15"></div>
+      <div className="fixed inset-0 z-0 bg-[url('/GovServePH.png')] bg-center bg-contain bg-no-repeat opacity-15"></div>
 
       {/* Animated Background Particles */}
       <div className="fixed inset-0 z-0">
@@ -261,10 +261,10 @@ export default function Login() {
         <div className="grid lg:grid-cols-2 gap-12 items-center max-w-7xl mx-auto">
           {/* Left Section - Features */}
           <div className="text-center lg:text-left">
-            <h2 className="text-4xl lg:text-5xl font-bold mb-6 bg-gradient-to-r from-blue-600 via-green-600 to-blue-600 bg-clip-text text-transparent bg-size-200 animate-gradient">
+            <h2 className="text-4xl lg:text-5xl font-bold mb-10 bg-gradient-to-r from-blue-600 via-green-600 to-blue-600 bg-clip-text text-transparent bg-size-600 animate-gradient">
               Abot-Kamay mo ang Serbisyong Publiko!
             </h2>
-            <p className="text-lg text-gray-600 max-w-lg mx-auto lg:mx-0">
+            <p className="text-lg text-gray-600 mt-10 max-w-lg mx-auto lg:mx-0">
               Access government services conveniently through our digital platform. 
               Fast, secure, and reliable public service at your fingertips.
             </p>

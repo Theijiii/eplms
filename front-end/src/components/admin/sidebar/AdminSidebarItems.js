@@ -69,7 +69,7 @@ const AdminSidebarItems = [
     subItems: [
       {
         id: "franchiseDashboard",
-        label: "Barangay Permit Application",
+        label: "Permit Application",
         path: "/admin/requestclearance"
   }]
   },
