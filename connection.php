@@ -1,23 +1,48 @@
 <?php
-header('Content-Type: application/json');
-include '../../connection.php'; // make sure this connects to your database
+session_start();
+header('Content-Type: application/json; charset=UTF-8');
 
-if (!isset($_GET['id'])) {
-    echo json_encode(['success' => false, 'message' => 'ID is required']);
+// ✅ Database credentials
+$host = "localhost";
+$password = "EPLMS";
+
+// Map database names to users
+$databases = [
+    'eplms_applicants_db'           => 'eplms_than',
+    'eplms_barangay_clearance_db'   => 'eplms_kim',
+    'eplms_building_permit_system'  => 'eplms_thei',
+    'eplms_franchise_applications'  => 'eplms_kobe',
+    'eplms_business_permit_system'  => 'eplms_thea',
+];
+
+// ✅ Determine target database (use ?db= parameter or default)
+$targetDb = $_GET['db'] ?? 'eplms_franchise_applications';
+
+if (!isset($databases[$targetDb])) {
+    http_response_code(400);
+    echo json_encode(["success" => false, "error" => "Unknown database: $targetDb"]);
     exit;
 }
 
-$id = intval($_GET['id']);
+// ✅ Create connection
+$dbUser = $databases[$targetDb];
+$conn = mysqli_connect($host, $dbUser, $password, $targetDb);
 
-$sql = "SELECT * FROM franchise_applications WHERE id = ?";
-$stmt = $conn->prepare($sql);
-$stmt->bind_param("i", $id);
-$stmt->execute();
-$result = $stmt->get_result();
-
-if ($result->num_rows > 0) {
-    $data = $result->fetch_assoc();
-    echo json_encode(['success' => true, 'data' => $data]);
-} else {
-    echo json_encode(['success' => false, 'message' => 'Franchise not found']);
+if (!$conn) {
+    http_response_code(500);
+    echo json_encode(["success" => false, "error" => mysqli_connect_error()]);
+    exit;
 }
+
+// ✅ Set charset
+mysqli_set_charset($conn, "utf8mb4");
+
+// ✅ Handle preflight OPTIONS request (optional, only needed if you ever serve cross-origin requests)
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(200);
+    exit;
+}
+
+// Connection is ready to be used
+// Example: $result = mysqli_query($conn, "SELECT * FROM some_table");
+?>
