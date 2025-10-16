@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { ChevronDown } from 'lucide-react';
 import AdminSidebarItems from './AdminSidebarItems';
-import ProfileCard from './ProfileCard';
 
 function AdminSidebar({ collapsed }) {
   const location = useLocation();
@@ -157,13 +156,6 @@ function AdminSidebar({ collapsed }) {
       </nav>
 
       <hr className="border-slate-300 dark:border-slate-700 mx-2" />
-
-      <ProfileCard
-        collapsed={collapsed}
-        name="LEIVY"
-        role="Super Saiyan"
-        avatarUrl="/Bartss.png"
-      />
     </div>
   );
 }

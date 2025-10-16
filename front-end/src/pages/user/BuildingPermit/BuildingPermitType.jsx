@@ -20,6 +20,7 @@ export default function BuildingPermitType({ building_permit_id }) {
     { id: 'OCCUPANCY', title: 'Occupancy', description: 'Occupancy permit', color: 'bg-pink-500 hover:bg-pink-600' },
     { id: 'ELECTRONICS', title: 'Electronics', description: 'Electronics works', color: 'bg-blue-500 hover:bg-blue-600' },
     { id: 'SIGNAGE', title: 'Signage', description: 'Signage works', color: 'bg-lime-500 hover:bg-lime-600' },
+    { id: 'PROFESSIONAL', title: 'Professional', description: 'Signage works', color: 'bg-lime-500 hover:bg-lime-600' },
   ];
 
   const handleTypeSelection = (typeId) => {

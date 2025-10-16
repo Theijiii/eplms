@@ -231,31 +231,32 @@ export default function BarangayNew() {
 
     try {
       
-fetch("http://localhost:8000/submit.php", {
-  method: "POST",
-  headers: {
-    "Content-Type": "application/json"
-  },
-  body: JSON.stringify(formData)
-})
-.then(res => res.json())
-.then(data => console.log(data))
-.catch(err => console.error(err));
+const response = await fetch('/back-end/api/franchise_permit.php', {
+  method: 'POST',
+  body: formDataToSend,
+  credentials: 'include'
+});
 
-      const data = await response.json();
-      if (data.success) {
-        setSubmitStatus({ type: 'success', message: 'Barangay Clearance application submitted!' });
-        setTimeout(() => navigate('/user/dashboard'), 2000);
-      } else {
-        setSubmitStatus({ type: 'error', message: data.message });
-      }
-    } catch (error) {
-      setSubmitStatus({ type: 'error', message: 'Failed to submit application' });
-    } finally {
-      setIsSubmitting(false);
+    console.log('Response status:', response.status);
+
+    const data = await response.json();
+    console.log('Response data:', data);
+
+    if (data.success) {
+      setSubmitStatus({ type: 'success', message: data.message });
+      setTimeout(() => {
+        navigate('/user/dashboard');
+      }, 2000);
+    } else {
+      setSubmitStatus({ type: 'error', message: data.message || 'Failed to submit application' });
     }
-  };
-
+  } catch (error) {
+    console.error('Submission error:', error);
+    setSubmitStatus({ type: 'error', message: 'Network error: ' + error.message });
+  } finally {
+    setIsSubmitting(false);
+  }
+};
   const renderStepContent = () => {
     switch (currentStep) {
       case 1:

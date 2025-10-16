@@ -22,14 +22,8 @@ const AdminSidebarItems = [
         id: "businessPermit",
         label: "Permit Application",
         path: "/admin/businesspermit" // updated to match route
-      },
-
-      {
-        id: "businessProcess",
-        label: "Business Progress",
-        path: "/admin/businessprocessing" // updated to match route
-      }
-    ]
+      }]
+    
   },
   {
     id: "BuildingPermit",
@@ -46,13 +40,7 @@ const AdminSidebarItems = [
         id: "buildingApplications",
         label: "Permit Applications",
         path: "/admin/buildingpermit"
-      },
-      {
-        id: "buildingProcess",
-        label: "Building Processing",
-        path: "/admin/buildingprocessing"
-      }
-    ]
+      }]
   },
   {
     id: "FranchisePermit",
@@ -77,7 +65,13 @@ const AdminSidebarItems = [
     id: "BarangayPermit",
     label: "Barangay Permit",
     icon: Home,
-    path: "/admin/barangaypermit"
+    path: "/admin/barangaypermit",
+    subItems: [
+      {
+        id: "franchiseDashboard",
+        label: "Barangay Permit Application",
+        path: "/admin/requestclearance"
+  }]
   },
   {
     id: "PermitTracker",

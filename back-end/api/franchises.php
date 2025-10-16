@@ -1,10 +1,13 @@
 <?php
 session_start();
 header('Content-Type: application/json; charset=utf-8');
+ob_start();
 
-// Enable error reporting for development (disable in production)
+// ✅ Show errors for debugging (disable in production)
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
+
+// ❌ --- CORS Configuration Removed ---
 
 // --- Database ---
 $targetDb = 'eplms_franchise_applications';

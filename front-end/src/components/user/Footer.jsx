@@ -7,7 +7,7 @@ import {
   Facebook,
   Twitter,
   Linkedin,
-  Github,
+
 } from "lucide-react";
 
 export default function Footer() {
@@ -21,14 +21,18 @@ export default function Footer() {
             <img
               src="/GSM_logo.png"
               alt="GoServePH Logo"
-              className="w-17 h-17 object-contain"
+              className="w-12 h-12 object-contain"
             />
-            <h2 className="text-3xl font-extrabold tracking-wide text-[#4CAF50]">
-              Go<span className="text-[#FDA811]">ServePH</span>
+            <h2 className="text-3xl font-extrabold tracking-wide">
+              <span className="text-xl font-bold font-montserrat">
+              <span className="text-blue-700">Go</span>
+              <span className="text-green-700">Serve</span>
+              <span className="text-blue-700">PH</span>
+            </span>
             </h2>
           </div>
 
-          <p className="text-md font-semibold text-[#555]">
+          <p className="text-s font-semibold text-[#555]">
             Serbisyong Publiko, Abot-Kamay Mo.
           </p>
 
@@ -54,13 +58,7 @@ export default function Footer() {
               aria-label="LinkedIn"
             >
               <Linkedin size={20} />
-            </a>
-            <a
-              href="#"
-              className="text-[#4A90E2] hover:text-[#4CAF50] transition-colors"
-              aria-label="GitHub"
-            >
-              <Github size={20} />
+            
             </a>
           </div>
         </div>

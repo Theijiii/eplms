@@ -7,33 +7,19 @@ ob_start();
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-// ✅ --- CORS Configuration ---
-// --- CORS FIX ---
-header("Access-Control-Allow-Origin: http://localhost:5173");
-header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
-header("Access-Control-Allow-Headers: Content-Type, Authorization");
-
-// If it's a preflight request (OPTIONS), stop here
-if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
-    http_response_code(200);
-    exit();
-}
 // ✅ --- Database ---
 $targetDb = 'eplms_franchise_applications';
 include '../../connection.php';
 
-// ✅ --- Helper Function ---
+// ✅ --- Helper ---
 function sanitize($data) {
     return htmlspecialchars(trim($data), ENT_QUOTES, 'UTF-8');
 }
 
-// ✅ --- Upload folder ---
+// ✅ --- File Upload Setup ---
 $uploadDir = __DIR__ . "/uploads/";
-if (!file_exists($uploadDir)) {
-    mkdir($uploadDir, 0777, true);
-}
+if (!file_exists($uploadDir)) mkdir($uploadDir, 0777, true);
 
-// ✅ --- File Upload Handling ---
 $fileFields = [
     'proof_of_residency', 'barangay_clearance', 'toda_endorsement', 'lto_or_cr',
     'insurance_certificate', 'drivers_license', 'emission_test', 'id_picture',
@@ -44,7 +30,7 @@ $fileFields = [
 
 $uploadedFiles = [];
 foreach ($fileFields as $f) {
-    if (isset($_FILES[$f]) && $_FILES[$f]['error'] === UPLOAD_ERR_OK) {
+    if (!empty($_FILES[$f]['tmp_name']) && $_FILES[$f]['error'] === UPLOAD_ERR_OK) {
         $fileTmp = $_FILES[$f]['tmp_name'];
         $fileName = time() . "_" . basename($_FILES[$f]['name']);
         if (move_uploaded_file($fileTmp, $uploadDir . $fileName)) {
@@ -53,35 +39,78 @@ foreach ($fileFields as $f) {
     }
 }
 
-// ✅ --- Process Form Fields ---
+// ✅ --- Collect Fields ---
 $formData = [];
 foreach ($_POST as $key => $val) {
-    $formData[$key] = ($val === '1' || $val === '0') ? intval($val) : sanitize($val);
+    $formData[$key] = sanitize($val);
 }
 
-// ✅ Map uploaded files to JSON column
+// ✅ --- Required Fields ---
+$requiredFields = [
+    'full_name', 'home_address', 'contact_number', 'email',
+    'citizenship', 'birth_date', 'id_type', 'id_number',
+    'make_brand', 'model', 'engine_number', 'chassis_number',
+    'plate_number', 'year_acquired', 'color', 'vehicle_type',
+    'lto_or_number', 'lto_cr_number', 'lto_expiration_date', 'mv_file_number',
+    'toda_name', 'route_zone', 'barangay_of_operation', 'district',
+    'applicant_signature', 'barangay_captain_signature', 'date_submitted'
+];
+
+foreach ($requiredFields as $f) {
+    if (!isset($formData[$f])) {
+        $formData[$f] = '';
+    }
+}
+
+// ✅ --- Handle Dates ---
+$dateFields = ['birth_date', 'lto_expiration_date', 'date_submitted'];
+foreach ($dateFields as $d) {
+    if (empty($formData[$d]) || $formData[$d] === '0000-00-00') {
+        $formData[$d] = date('Y-m-d');
+    }
+}
+
+// ✅ --- Handle Integers ---
+$intFields = ['year_acquired'];
+foreach ($intFields as $i) {
+    if (empty($formData[$i]) || !is_numeric($formData[$i])) {
+        $formData[$i] = 0;
+    } else {
+        $formData[$i] = intval($formData[$i]);
+    }
+}
+
+// ✅ Include uploaded files
 $formData['file_attachments'] = json_encode($uploadedFiles, JSON_UNESCAPED_SLASHES);
 
-// ✅ Add submission date if missing
+// ✅ Default submission timestamp
 if (empty($formData['date_submitted'])) {
     $formData['date_submitted'] = date("Y-m-d H:i:s");
 }
 
-// ✅ Remove unnecessary fields
+// ✅ Remove unused frontend fields
 unset($formData['attachments']);
 
-// ✅ --- Insert into DB ---
+// ✅ --- Build SQL ---
 $table = "franchise_applications";
-
 $columns = implode(", ", array_keys($formData));
-$values  = implode(", ", array_map(fn($v) => "'" . $conn->real_escape_string($v) . "'", array_values($formData)));
 
-$sql = "INSERT INTO $table ($columns) VALUES ($values)";
+$values = implode(", ", array_map(function($v) use ($conn) {
+    if (is_null($v)) return "NULL";
+    return "'" . $conn->real_escape_string($v) . "'";
+}, array_values($formData)));
 
+$sql = "INSERT INTO `$table` ($columns) VALUES ($values)";
+
+// ✅ --- Execute ---
 if ($conn->query($sql)) {
     echo json_encode(["success" => true, "message" => "Application submitted successfully."]);
 } else {
-    echo json_encode(["success" => false, "message" => "Failed to submit: " . $conn->error]);
+    echo json_encode([
+        "success" => false,
+        "message" => "Database error: " . $conn->error,
+        "sql" => $sql
+    ]);
 }
 
 $conn->close();

@@ -49,11 +49,10 @@ export default function BusinessLiquor() {
     setIsSubmitting(true);
 
     try {
-      const response = await fetch('http://localhost:3001/user/renewal-form/', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
-      });
+    const response = await fetch("/back-end/api/business_permit.php", {
+      method: "POST",
+      body: formDataToSend,
+    });
 
       const data = await response.json();
       if (data.success) {

@@ -1,22 +1,16 @@
 <?php
 session_start();
 header('Content-Type: application/json; charset=utf-8');
-header("Access-Control-Allow-Origin: http://localhost:3000");
-header("Access-Control-Allow-Methods: POST, OPTIONS");
-header("Access-Control-Allow-Headers: Content-Type");
 ob_start();
 
+// ✅ Show errors for debugging (disable in production)
 error_reporting(E_ALL);
-ini_set('display_errors', 0);
+ini_set('display_errors', 1);
 
-// Handle preflight OPTIONS request
-if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-    http_response_code(200);
-    exit();
-}
+// ❌ --- Removed all CORS Configuration ---
 
-// --- Database ---
-$targetDb = 'eplms_business_permit_system';
+// ✅ --- Database ---
+$targetDb = 'business_permit_system';
 include '../../connection.php';
 
 if (!isset($databases[$targetDb])) {
@@ -62,10 +56,7 @@ if (!file_exists($uploadDir)) {
 
 // --- File upload handling ---
 $fileFields = [
-    // Owner Information
-    'owner_valid_id', 'id_picture', 'owner_scanned_id',
-    
-    // Business Attachments
+    'owner_valid_id_file', 'id_picture', 'owner_scanned_id',
     'barangay_clearance', 'registration_doc', 'bir_certificate',
     'lease_or_title', 'fsic', 'sanitary_permit', 'zoning_clearance',
     'occupancy_permit', 'official_receipt_file'
@@ -81,80 +72,44 @@ foreach ($fileFields as $field) {
 
 // --- Process form fields ---
 $formData = [];
-
-// Process POST data
 foreach ($_POST as $key => $val) {
-    // Handle checkbox/boolean values
     if ($val === 'true' || $val === 'false') {
         $formData[$key] = $val === 'true' ? 1 : 0;
-    } 
-    // Handle numeric values
-    elseif (is_numeric($val) && in_array($key, [
-        'corp_filipino_percent', 'corp_foreign_percent', 'capital_investment',
-        'number_of_employees', 'total_floor_area', 'total_employees',
-        'male_employees', 'female_employees', 'lgu_resident_employees',
-        'delivery_van_truck', 'delivery_motorcycle'
-    ])) {
-        $formData[$key] = floatval($val);
-    }
-    // Handle empty strings for optional fields
-    elseif ($val === '') {
+    } elseif (is_numeric($val)) {
+        $formData[$key] = $val;
+    } elseif ($val === '') {
         $formData[$key] = null;
-    }
-    // Regular string fields
-    else {
+    } else {
         $formData[$key] = sanitize($val);
     }
 }
 
-// Handle time fields with AM/PM
+// Handle operation times with AM/PM
 if (!empty($formData['operation_from_time']) && !empty($formData['operation_from_ampm'])) {
     $formData['operation_from_time'] = $formData['operation_from_time'] . ' ' . $formData['operation_from_ampm'];
 }
-
 if (!empty($formData['operation_to_time']) && !empty($formData['operation_to_ampm'])) {
     $formData['operation_to_time'] = $formData['operation_to_time'] . ' ' . $formData['operation_to_ampm'];
 }
 
-// Set default application date if not provided
-if (empty($formData['application_date'])) {
-    $formData['application_date'] = date('Y-m-d');
+// Add uploaded files to form data
+foreach ($uploadedFiles as $key => $filename) {
+    $formData[$key] = $filename;
 }
 
-if (empty($formData['date_submitted'])) {
-    $formData['date_submitted'] = date('Y-m-d');
-}
+// Timestamps
+$formData['date_submitted'] = date('Y-m-d H:i:s');
+$formData['date_updated'] = date('Y-m-d H:i:s');
 
-// Combine file attachments into JSON
-$formData['file_attachments'] = json_encode($uploadedFiles);
+// --- Insert into database ---
+$table = "business_permits";
 
-// Add timestamp
-$formData['created_at'] = date('Y-m-d H:i:s');
-$formData['updated_at'] = date('Y-m-d H:i:s');
+// Generate columns and placeholders
+$columns = array_keys($formData);
+$placeholders = array_fill(0, count($columns), '?');
+$values = array_values($formData);
 
-// --- Insert into Database ---
-$table = "permit_applications";
-
-// Prepare columns and values
-$columns = [];
-$placeholders = [];
-$values = [];
-
-foreach ($formData as $column => $value) {
-    $columns[] = $column;
-    $placeholders[] = '?';
-    
-    if ($value === null) {
-        $values[] = null;
-    } else {
-        $values[] = $value;
-    }
-}
-
-$columnsStr = implode(", ", $columns);
-$placeholdersStr = implode(", ", $placeholders);
-
-$sql = "INSERT INTO $table ($columnsStr) VALUES ($placeholdersStr)";
+$sql = "INSERT INTO $table (" . implode(",", $columns) . ") VALUES (" . implode(",", $placeholders) . ")";
 
 try {
     $stmt = $conn->prepare($sql);
@@ -165,42 +120,31 @@ try {
     // Bind parameters
     $types = '';
     $params = [];
-    
     foreach ($values as $value) {
-        if ($value === null) {
-            $types .= 's'; // Use string for NULL
-            $params[] = null;
-        } elseif (is_int($value)) {
-            $types .= 'i';
-            $params[] = $value;
-        } elseif (is_float($value)) {
-            $types .= 'd';
-            $params[] = $value;
-        } else {
-            $types .= 's';
-            $params[] = $value;
-        }
+        if (is_int($value)) $types .= 'i';
+        elseif (is_float($value)) $types .= 'd';
+        else $types .= 's';
+        $params[] = $value;
     }
-    
+
     $stmt->bind_param($types, ...$params);
-    
+
     if ($stmt->execute()) {
         $applicationId = $conn->insert_id;
         echo json_encode([
-            "success" => true, 
+            "success" => true,
             "message" => "Business permit application submitted successfully.",
             "application_id" => $applicationId
         ]);
     } else {
         throw new Exception("Execute failed: " . $stmt->error);
     }
-    
+
     $stmt->close();
-    
 } catch (Exception $e) {
     error_log("Business Permit Submission Error: " . $e->getMessage());
     echo json_encode([
-        "success" => false, 
+        "success" => false,
         "message" => "Submission failed: " . $e->getMessage()
     ]);
 }

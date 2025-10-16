@@ -87,10 +87,10 @@ const missing = []; stepFields[step].forEach(field => { if (isEmpty(formData[fie
         }
       }
 
-      const response = await fetch("http://localhost:3002/newbuildingapp", {
-        method: "POST",
-        body: submitData,
-      });
+     const response = await fetch("/back-end/api/building_permit.php", {
+      method: "POST",
+      body: formDataToSend,
+    });
 
       const data = await response.json();
       if (response.ok) {

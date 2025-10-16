@@ -289,7 +289,7 @@ const confirmSubmit = async () => {
       }
     });
 
-    const response = await fetch("http://127.0.0.1:8000/api/business_permit.php", {
+    const response = await fetch("/back-end/api/business_permit.php", {
       method: "POST",
       body: formDataToSend,
     });
@@ -374,76 +374,116 @@ case 1:
         </div>
 
         {/* Owner Type */}
-        <div>
-          <label className="block text-sm font-medium mb-1 text-gray-700">Owner Type</label>
-          <select
-            name="owner_type"
-            value={formData.owner_type || ""}
-            onChange={handleChange}
-            className="p-3 border rounded w-full"
-          >
-            <option value="">Select owner type</option>
-            <option value="Individual">Individual</option>
-            <option value="Partnership">Partnership</option>
-            <option value="Corporation">Corporation</option>
-          </select>
-        </div>
+<div>
+  <label className="block text-sm font-medium mb-1 text-gray-700">Owner Type</label>
+  <select
+    name="owner_type"
+    value={formData.owner_type || ""}
+    onChange={handleChange}
+    className="p-3 border rounded w-full"
+  >
+    <option value="">Select owner type</option>
+    <option value="Individual">Individual</option>
+    <option value="Partnership">Partnership</option>
+    <option value="Corporation">Corporation</option>
+  </select>
+</div>
 
-        {/* Citizenship + Corporation Ownership */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:col-span-2">
+{/* Citizenship + Conditional Fields */}
+<div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:col-span-2">
+  {/* Citizenship */}
+  <div>
+    <label className="block text-sm font-medium mb-1 text-gray-700">Citizenship</label>
+    <input
+      list="nationalities"
+      name="citizenship"
+      value={formData.citizenship || ""}
+      onChange={handleChange}
+      placeholder="Enter citizenship"
+      className="p-3 border rounded w-full"
+    />
+    <datalist id="nationalities">
+      {NATIONALITIES.map((n) => (
+        <option key={n} value={n} />
+      ))}
+    </datalist>
+  </div>
 
-          {/* Citizenship */}
-          <div>
-            <label className="block text-sm font-medium mb-1 text-gray-700">Citizenship</label>
-            <input
-              list="nationalities"
-              name="citizenship"
-              value={formData.citizenship || ""}
-              onChange={handleChange}
-              placeholder="Enter citizenship"
-              className="p-3 border rounded w-full"
-            />
-            <datalist id="nationalities">
-              {NATIONALITIES.map((n) => (
-                <option key={n} value={n} />
-              ))}
-            </datalist>
-          </div>
+  {/* Corporation fields */}
+  {formData.owner_type === "Corporation" && (
+    <>
+      {/* Filipino % */}
+      <div>
+        <label className="block text-sm font-medium mb-1 text-gray-700">
+          For Corporation: Filipino (%)
+        </label>
+        <input
+          type="number"
+          name="corp_filipino_percent"
+          value={formData.corp_filipino_percent || ""}
+          onChange={handleChange}
+          placeholder="%"
+          className="p-3 border rounded w-full"
+          min="0"
+          max="100"
+        />
+      </div>
 
-          {/* Filipino % */}
-          <div>
-            <label className="block text-sm font-medium mb-1 text-gray-700">
-              For Corporation: Filipino (%)
-            </label>
-            <input
-              type="number"
-              name="corp_filipino_percent"
-              value={formData.corp_filipino_percent || ""}
-              onChange={handleChange}
-              placeholder="%"
-              className="p-3 border rounded w-full"
-              min="0"
-              max="100"
-            />
-          </div>
+      {/* Foreign % */}
+      <div>
+        <label className="block text-sm font-medium mb-1 text-gray-700">
+          For Corporation: Foreign (%)
+        </label>
+        <input
+          type="number"
+          name="corp_foreign_percent"
+          value={formData.corp_foreign_percent || ""}
+          onChange={handleChange}
+          placeholder="%"
+          className="p-3 border rounded w-full"
+          min="0"
+          max="100"
+        />
+      </div>
+    </>
+  )}
 
-          {/* Foreign % */}
-          <div>
-            <label className="block text-sm font-medium mb-1 text-gray-700">
-              For Corporation: Foreign (%)
-            </label>
-            <input
-              type="number"
-              name="corp_foreign_percent"
-              value={formData.corp_foreign_percent || ""}
-              onChange={handleChange}
-              placeholder="%"
-              className="p-3 border rounded w-full"
-              min="0"
-              max="100"
-            />
-          </div>
-        </div>
+  {/* Individual fields */}
+  {formData.owner_type === "Individual" && (
+    <div className="md:col-span-2">
+      <label className="block text-sm mb-1">
+        DTI Registration (Upload)*
+      </label>
+      <label className="cursor-pointer p-3 border rounded w-full inline-block text-center bg-white">
+        {formData.registration_doc ? `Selected: ${formData.registration_doc.name}` : 'Choose file or click to upload'}
+        <input
+          type="file"
+          name="registration_doc"
+          onChange={handleFile}
+          className="hidden"
+        />
+      </label>
+    </div>
+  )}
+
+   {formData.owner_type === "Partnership" && (
+    <div className="md:col-span-2">
+      <label className="block text-sm mb-1">
+        SEC Registration (Upload)*
+      </label>
+      <label className="cursor-pointer p-3 border rounded w-full inline-block text-center bg-white">
+        {formData.registration_doc ? `Selected: ${formData.registration_doc.name}` : 'Choose file or click to upload'}
+        <input
+          type="file"
+          name="registration_doc"
+          onChange={handleFile}
+          className="hidden"
+        />
+      </label>
+    </div>
+  )}
+</div>
+
 
         {/* Date of Birth */}
         <div>
