@@ -248,7 +248,7 @@ if (name === "contact_number") {
 
     console.log('Submitting form to PHP backend...');
 
-const response = await fetch('/back-end/api/franchise_permit.php', {
+const response = await fetch('https://e-plms.goserveph.com/back-end/api/franchise_permit.php', {
   method: 'POST',
   body: formDataToSend,
 });
