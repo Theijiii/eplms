@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-
+import { useNavigate } from 'react-router-dom';
 export default function ExcavationPermit() {
+const navigate = useNavigate();
   const steps = [
     { id: 1, title: 'Project & Owner Info', description: 'Basic excavation project details' },
     { id: 2, title: 'Engineer & Contractor', description: 'Professional credentials' },
@@ -209,6 +210,13 @@ export default function ExcavationPermit() {
             Apply for an excavation and grading works permit. Please provide details about the excavation project and required documents.
           </p>
         </div>
+                                  <button
+          onClick={() => navigate('/user/building/type')}
+          className="px-4 py-2 rounded-lg text-white font-semibold"
+          style={{ background: '#4CAF50' }}
+        >
+          Change Type
+        </button>
       </div>
 
       {/* Progress Steps */}

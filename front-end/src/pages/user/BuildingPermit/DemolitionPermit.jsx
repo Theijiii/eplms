@@ -1,6 +1,12 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+
 
 export default function DemolitionPermit() {
+    const navigate = useNavigate();
+
+  
+
   const steps = [
     { id: 1, title: 'Project & Owner Info', description: 'Basic demolition project details' },
     { id: 2, title: 'Professional & Contractor', description: 'Supervising professional and contractor' },
@@ -208,6 +214,13 @@ export default function DemolitionPermit() {
             Apply for a demolition works permit. Please provide details about the demolition project and required documents.
           </p>
         </div>
+                <button
+          onClick={() => navigate('/user/building/type')}
+          className="px-4 py-2 rounded-lg text-white font-semibold"
+          style={{ background: '#4CAF50' }}
+        >
+          Change Type
+        </button>
       </div>
 
       {/* Progress Steps */}
@@ -232,6 +245,7 @@ export default function DemolitionPermit() {
               {index < steps.length - 1 && (
                 <div className="hidden md:block w-16 h-0.5 mx-4" style={{ background: currentStep > step.id ? '#4a90e2' : '#9aa5b1' }} />
               )}
+              
             </div>
           ))}
         </div>

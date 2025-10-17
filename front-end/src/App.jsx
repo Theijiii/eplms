@@ -36,9 +36,6 @@ import FranchiseNew from "./pages/user/FranchisePermit/FranchiseNew"
 import BarangayNew from "./pages/user/BarangayPermit/BarangayNew"
 import BarangayPermitType from "./pages/user/BarangayPermit/BarangayPermitType"
 import UserTracker from "./pages/user/PermitTracker/UserTracker"
-import UserGeneralSettings from "./pages/user/Settings/General"
-import UserSecuritySettings from "./pages/user/Settings/Security"
-
 // Admin imports
 import AdminDashboard from "./pages/admin/AdminDashboard";
 
@@ -117,8 +114,7 @@ import TestBarangayForm from "./components/TestBarangayForm";
 
         {/* Other user routes */}
         <Route path="permittracker" element={<UserTracker />} />
-        <Route path="general" element={<UserGeneralSettings />} />
-        <Route path="security" element={<UserSecuritySettings />} />
+
       </Route>
 
       {/* Test form route (top-level, outside user/admin) */}

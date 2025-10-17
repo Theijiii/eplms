@@ -101,10 +101,9 @@ const [formData, setFormData] = useState({
   const steps = [
     { id: 1, title: 'Owner Information' },
     { id: 2, title: 'Business Information' },
-    { id: 3, title: 'Location & Zoning' },
+    { id: 3, title: 'Locatio, Zoning and Operation Details'},
     { id: 4, title: 'Operations & Employment Details' },
-    { id: 5, title: 'Clearances & Attachments' },
-    { id: 6, title: 'Declaration & Approval' }
+    { id: 5, title: 'Declration & Review'}
   ];
 
 const handleChange = (e) => {
@@ -158,9 +157,6 @@ const validateStep = (step) => {
     if (isEmpty(formData.business_name)) missing.push("Registered Business Name");
     if (isEmpty(formData.trade_name)) missing.push("Trade / Brand Name");
     if (isEmpty(formData.business_nature)) missing.push("Nature of Business");
-    if (isEmpty(formData.business_structure)) missing.push("Business Structure");
-    if (isEmpty(formData.registration_no)) missing.push("DTI / SEC / CDA Registration No.");
-    if (isEmpty(formData.tin)) missing.push("Tax Identification Number (TIN)");
     if (isEmpty(formData.ownership_status)) missing.push("Ownership Status");
     if (isEmpty(formData.building_type)) missing.push("Building Type");
     if (isEmpty(formData.business_activity)) missing.push("Primary Business Activity");
@@ -289,7 +285,7 @@ const confirmSubmit = async () => {
       }
     });
 
-    const response = await fetch("/back-end/api/business_permit.php", {
+    const response = await fetch("/api/business_permit.php", {
       method: "POST",
       body: formDataToSend,
     });
@@ -330,14 +326,10 @@ const confirmSubmit = async () => {
     switch (currentStep) {
 case 1:
   return (
-
     <div className="space-y-6">
       <h3 className="text-xl font-semibold">Owner Information</h3>
-      {/* <button onClick={() => navigate('/user/business/type')} className="px-4 py-2 rounded-lg" style={{ background: '#9aa5b1', color: '#fff' }}>Change Type</button>
-    </div> */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 
-        
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 
         {/* First Name */}
         <div>
@@ -350,7 +342,8 @@ case 1:
             className="p-3 border rounded w-full"
           />
         </div>
-       {/* Last Name */}
+
+        {/* Last Name */}
         <div>
           <label className="block text-sm font-medium mb-1 text-gray-700">Last Name</label>
           <input
@@ -361,6 +354,7 @@ case 1:
             className="p-3 border rounded w-full"
           />
         </div>
+
         {/* Middle Name */}
         <div>
           <label className="block text-sm font-medium mb-1 text-gray-700">Middle Name</label>
@@ -374,116 +368,107 @@ case 1:
         </div>
 
         {/* Owner Type */}
-<div>
-  <label className="block text-sm font-medium mb-1 text-gray-700">Owner Type</label>
-  <select
-    name="owner_type"
-    value={formData.owner_type || ""}
-    onChange={handleChange}
-    className="p-3 border rounded w-full"
-  >
-    <option value="">Select owner type</option>
-    <option value="Individual">Individual</option>
-    <option value="Partnership">Partnership</option>
-    <option value="Corporation">Corporation</option>
-  </select>
-</div>
+        <div>
+          <label className="block text-sm font-medium mb-1 text-gray-700">Owner Type</label>
+          <select
+            name="owner_type"
+            value={formData.owner_type || ""}
+            onChange={handleChange}
+            className="p-3 border rounded w-full"
+          >
+            <option value="">Select owner type</option>
+            <option value="Individual">Individual</option>
+            <option value="Partnership">Partnership</option>
+            <option value="Corporation">Corporation</option>
+          </select>
+        </div>
 
-{/* Citizenship + Conditional Fields */}
-<div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:col-span-2">
-  {/* Citizenship */}
-  <div>
-    <label className="block text-sm font-medium mb-1 text-gray-700">Citizenship</label>
-    <input
-      list="nationalities"
-      name="citizenship"
-      value={formData.citizenship || ""}
-      onChange={handleChange}
-      placeholder="Enter citizenship"
-      className="p-3 border rounded w-full"
-    />
-    <datalist id="nationalities">
-      {NATIONALITIES.map((n) => (
-        <option key={n} value={n} />
-      ))}
-    </datalist>
-  </div>
+        {/* Citizenship + Conditional Fields */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:col-span-2">
+          {/* Citizenship */}
+          <div>
+            <label className="block text-sm font-medium mb-1 text-gray-700">Citizenship</label>
+            <input
+              list="nationalities"
+              name="citizenship"
+              value={formData.citizenship || ""}
+              onChange={handleChange}
+              placeholder="Enter citizenship"
+              className="p-3 border rounded w-full"
+            />
+            <datalist id="nationalities">
+              {NATIONALITIES.map((n) => (
+                <option key={n} value={n} />
+              ))}
+            </datalist>
+          </div>
 
-  {/* Corporation fields */}
-  {formData.owner_type === "Corporation" && (
-    <>
-      {/* Filipino % */}
-      <div>
-        <label className="block text-sm font-medium mb-1 text-gray-700">
-          For Corporation: Filipino (%)
-        </label>
-        <input
-          type="number"
-          name="corp_filipino_percent"
-          value={formData.corp_filipino_percent || ""}
-          onChange={handleChange}
-          placeholder="%"
-          className="p-3 border rounded w-full"
-          min="0"
-          max="100"
-        />
-      </div>
+          {/* Conditional Fields beside Citizenship */}
+          {formData.owner_type === "Corporation" && (
+            <>
+              <div>
+                <label className="block text-sm font-medium mb-1 text-gray-700">
+                  Filipino (%)
+                </label>
+                <input
+                  type="number"
+                  name="corp_filipino_percent"
+                  value={formData.corp_filipino_percent || ""}
+                  onChange={handleChange}
+                  placeholder="%"
+                  className="p-3 border rounded w-full"
+                  min="0"
+                  max="100"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1 text-gray-700">
+                  Foreign (%)
+                </label>
+                <input
+                  type="number"
+                  name="corp_foreign_percent"
+                  value={formData.corp_foreign_percent || ""}
+                  onChange={handleChange}
+                  placeholder="%"
+                  className="p-3 border rounded w-full"
+                  min="0"
+                  max="100"
+                />
+              </div>
+            </>
+          )}
 
-      {/* Foreign % */}
-      <div>
-        <label className="block text-sm font-medium mb-1 text-gray-700">
-          For Corporation: Foreign (%)
-        </label>
-        <input
-          type="number"
-          name="corp_foreign_percent"
-          value={formData.corp_foreign_percent || ""}
-          onChange={handleChange}
-          placeholder="%"
-          className="p-3 border rounded w-full"
-          min="0"
-          max="100"
-        />
-      </div>
-    </>
-  )}
+          {formData.owner_type === "Individual" && (
+            <div className="md:col-span-2">
+              <label className="block text-sm font-medium mb-1 text-gray-700">
+                Upload DTI Registration
+              </label>
+              <input
+                type="file"
+                name="dti_registration"
+                onChange={handleChange}
+                accept=".pdf,.jpg,.png"
+                className="p-3 border rounded w-full"
+              />
+            </div>
+          )}
 
-  {/* Individual fields */}
-  {formData.owner_type === "Individual" && (
-    <div className="md:col-span-2">
-      <label className="block text-sm mb-1">
-        DTI Registration (Upload)*
-      </label>
-      <label className="cursor-pointer p-3 border rounded w-full inline-block text-center bg-white">
-        {formData.registration_doc ? `Selected: ${formData.registration_doc.name}` : 'Choose file or click to upload'}
-        <input
-          type="file"
-          name="registration_doc"
-          onChange={handleFile}
-          className="hidden"
-        />
-      </label>
-    </div>
-  )}
-
-   {formData.owner_type === "Partnership" && (
-    <div className="md:col-span-2">
-      <label className="block text-sm mb-1">
-        SEC Registration (Upload)*
-      </label>
-      <label className="cursor-pointer p-3 border rounded w-full inline-block text-center bg-white">
-        {formData.registration_doc ? `Selected: ${formData.registration_doc.name}` : 'Choose file or click to upload'}
-        <input
-          type="file"
-          name="registration_doc"
-          onChange={handleFile}
-          className="hidden"
-        />
-      </label>
-    </div>
-  )}
-</div>
-
+          {formData.owner_type === "Partnership" && (
+            <div className="md:col-span-2">
+              <label className="block text-sm font-medium mb-1 text-gray-700">
+                Upload SEC Registration
+              </label>
+              <input
+                type="file"
+                name="sec_registration"
+                onChange={handleChange}
+                accept=".pdf,.jpg,.png"
+                className="p-3 border rounded w-full"
+              />
+            </div>
+          )}
+        </div>
 
         {/* Date of Birth */}
         <div>
@@ -498,16 +483,18 @@ case 1:
         </div>
 
         {/* Contact Number */}
-        <div>
-          <label className="block text-sm font-medium mb-1 text-gray-700">Contact Number</label>
-          <input
-            name="contact_number"
-            value={formData.contact_number || ""}
-            onChange={handleChange}
-            placeholder="Enter contact number"
-            className="p-3 border rounded w-full"
-          />
-        </div>
+<div>
+  <label className="block text-sm font-medium mb-1 text-gray-700">Contact Number</label>
+  <input
+    type="number"
+    name="contact_number"
+    value={formData.contact_number || ""}
+    placeholder="(e.g. 09123456789)"
+     onChange={handleChange}
+    className="p-3 border rounded w-full"
+  />
+</div>
+
 
         {/* Email Address */}
         <div>
@@ -527,7 +514,7 @@ case 1:
           <label className="block text-sm font-medium mb-1 text-gray-700">Home Address</label>
           <input
             name="home_address"
-            value={formData.home_address  || ""}
+            value={formData.home_address || ""}
             onChange={handleChange}
             placeholder="Enter home address"
             className="p-3 border rounded w-full"
@@ -586,6 +573,7 @@ case 1:
       </div>
     </div>
   );
+
 
 case 2:
   return (
@@ -659,48 +647,16 @@ case 2:
             <option value="Agricultural / Farming">Agricultural / Farming</option>
           </select>
         </div>
-
+        {/* 💼 Additional Business Details */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
-            Business Structure
-          </label>
-          <select
-            name="business_structure"
-            value={formData.business_structure || ""}
-            onChange={handleChange}
-            className="p-3 border rounded w-full"
-          >
-            <option value="">Select Business Structure</option>
-            <option value="Sole Proprietorship">Sole Proprietorship</option>
-            <option value="Partnership">Partnership</option>
-            <option value="Corporation">Corporation</option>
-          </select>
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            DTI / SEC / CDA Registration No.
+            Primary Business Activity
           </label>
           <input
-            type="number"
-            name="registration_no"
-            value={formData.registration_no || ""}
+            name="business_activity"
+            value={formData.business_activity || ""}
             onChange={handleChange}
-            placeholder="DTI / SEC / CDA Registration No."
-            className="p-3 border rounded w-full"
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Tax Identification Number (TIN)
-          </label>
-          <input
-           type="number"
-            name="tin"
-            value={formData.tin || ""}
-            onChange={handleChange}
-            placeholder="TIN (Tax Identification Number)"
+            placeholder="Primary Business Activity"
             className="p-3 border rounded w-full"
           />
         </div>
@@ -740,19 +696,7 @@ case 2:
           </select>
         </div>
 
-        {/* 💼 Additional Business Details */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Primary Business Activity
-          </label>
-          <input
-            name="business_activity"
-            value={formData.business_activity || ""}
-            onChange={handleChange}
-            placeholder="Primary Business Activity"
-            className="p-3 border rounded w-full"
-          />
-        </div>
+
         
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -768,7 +712,7 @@ case 2:
           />
         </div>
 
-        <div className="md:col-span-2">
+        <div className="md:col-span-1">
           <label className="block text-sm font-medium text-gray-700 mb-1">
             Brief Description of Business
           </label>
@@ -785,351 +729,254 @@ case 2:
     </div>
   );
 
-
 case 3:
   return (
-    <div className="space-y-6">
-      <h3 className="text-xl font-semibold mb-4">Location, Zoning & Business Address</h3>
+    <div className="space-y-10">
+      {/* SECTION 1: LOCATION, ZONING & BUSINESS ADDRESS */}
+      <div>
+        <h3 className="text-xl font-semibold mb-4">Location, Zoning & Business Address</h3>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
-          <label className="block mb-2 font-medium">House/Building Number *</label>
-          <input
-            type="number"
-            name="house_bldg_no"
-            value={formData.house_bldg_no || ""}
-            onChange={handleChange}
-            className="w-full p-3 border rounded-lg"
-            required
-          />
-        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label className="block mb-2 font-medium">
+              House/Building Number <span className="text-red-500">*</span>
+            </label>
+            <input
+              type="text"
+              name="house_bldg_no"
+              value={formData.house_bldg_no || ""}
+              onChange={handleChange}
+              className="w-full p-3 border rounded-lg"
+              required
+            />
+          </div>
 
-        <div>
-          <label className="block mb-2 font-medium">Building Name</label>
-          <input
-            type="text"
-            name="building_name"
-            value={formData.building_name || ""}
-            onChange={handleChange}
-            className="w-full p-3 border rounded-lg"
-          />
-        </div>
+          <div>
+            <label className="block mb-2 font-medium">Building Name</label>
+            <input
+              type="text"
+              name="building_name"
+              value={formData.building_name || ""}
+              onChange={handleChange}
+              className="w-full p-3 border rounded-lg"
+            />
+          </div>
 
-        <div>
-          <label className="block mb-2 font-medium">Street *</label>
-          <input
-            type="text"
-            name="street"
-            value={formData.street || ""}
-            onChange={handleChange}
-            className="w-full p-3 border rounded-lg"
-            required
-          />
-        </div>
+          <div>
+            <label className="block mb-2 font-medium">
+              Street <span className="text-red-500">*</span>
+            </label>
+            <input
+              type="text"
+              name="street"
+              value={formData.street || ""}
+              onChange={handleChange}
+              className="w-full p-3 border rounded-lg"
+              required
+            />
+          </div>
 
-        <div>
-          <label className="block mb-2 font-medium">Barangay *</label>
-          <input
-            type="text"
-            name="barangay"
-            value={formData.barangay || ""}
-            onChange={handleChange}
-            className="w-full p-3 border rounded-lg"
-            required
-          />
-        </div>
+          <div>
+            <label className="block mb-2 font-medium">
+              Barangay <span className="text-red-500">*</span>
+            </label>
+            <input
+              type="text"
+              name="barangay"
+              value={formData.barangay || ""}
+              onChange={handleChange}
+              className="w-full p-3 border rounded-lg"
+              required
+            />
+          </div>
 
-        <div>
-          <label className="block mb-2 font-medium">City/Municipality *</label>
-          <input
-            type="text"
-            name="city_municipality"
-            value={formData.city_municipality || ""}
-            onChange={handleChange}
-            className="w-full p-3 border rounded-lg"
-            required
-          />
-        </div>
+          <div>
+            <label className="block mb-2 font-medium">
+              City/Municipality <span className="text-red-500">*</span>
+            </label>
+            <input
+              type="text"
+              name="city_municipality"
+              value={formData.city_municipality || ""}
+              onChange={handleChange}
+              className="w-full p-3 border rounded-lg"
+              required
+            />
+          </div>
 
-        <div>
-          <label className="block mb-2 font-medium">Province *</label>
-          <input
-            type="text"
-            name="province"
-            value={formData.province || ""}
-            onChange={handleChange}
-            className="w-full p-3 border rounded-lg"
-            required
-          />
-        </div>
+          <div>
+            <label className="block mb-2 font-medium">
+              Province <span className="text-red-500">*</span>
+            </label>
+            <input
+              type="text"
+              name="province"
+              value={formData.province || ""}
+              onChange={handleChange}
+              className="w-full p-3 border rounded-lg"
+              required
+            />
+          </div>
 
-        <div>
-          <label className="block mb-2 font-medium">ZIP Code</label>
-          <input
-            type="number"
-            name="zip_code"
-            value={formData.zip_code || ""}
-            onChange={handleChange}
-            className="w-full p-3 border rounded-lg"
-          />
-        </div>
+          <div>
+            <label className="block mb-2 font-medium">ZIP Code</label>
+            <input
+              type="text"
+              name="zip_code"
+              value={formData.zip_code || ""}
+              onChange={handleChange}
+              className="w-full p-3 border rounded-lg"
+              maxLength="4"
+            />
+          </div>
 
-        <div>
-          <label className="block mb-2 font-medium">Zone / District</label>
-          <input
-            type="text"
-            name="zone_district"
-            value={formData.zone_district || ""}
-            onChange={handleChange}
-            className="w-full p-3 border rounded-lg"
-          />
-        </div>
+          <div>
+            <label className="block mb-2 font-medium">Zone / District</label>
+            <input
+              type="text"
+              name="zone_district"
+              value={formData.zone_district || ""}
+              onChange={handleChange}
+              className="w-full p-3 border rounded-lg"
+            />
+          </div>
 
-        <div>
-          <label className="block mb-2 font-medium">Business Zone</label>
-          <select
-            name="business_zone"
-            value={formData.business_zone || ""}
-            onChange={handleChange}
-            className="w-full p-3 border rounded-lg"
-          >
-            <option value="">Select Zone</option>
-            <option value="Commercial">Commercial</option>
-            <option value="Industrial">Industrial</option>
-            <option value="Residential">Residential</option>
-            <option value="Mixed-use">Mixed-use</option>
-          </select>
-        </div>
+          <div>
+            <label className="block mb-2 font-medium">
+              Business Zone <span className="text-red-500">*</span>
+            </label>
+            <select
+              name="business_zone"
+              value={formData.business_zone || ""}
+              onChange={handleChange}
+              className="w-full p-3 border rounded-lg"
+              required
+            >
+              <option value="">Select Zone</option>
+              <option value="Commercial">Commercial</option>
+              <option value="Industrial">Industrial</option>
+              <option value="Residential">Residential</option>
+              <option value="Mixed-use">Mixed-use</option>
+            </select>
+          </div>
 
-       {/* <div>
-          <label className="block mb-2 font-medium">Business Area (sq.m.)</label>
-          <input
-            type="number"
-            name="business_area"
-            value={formData.business_area || ""}
-            onChange={handleChange}
-            className="w-full p-3 border rounded-lg"
-          />
-        </div> */}
+          <div>
+            <label className="block mb-2 font-medium">Type of Establishment</label>
+            <select
+              name="establishment_type"
+              value={formData.establishment_type || ""}
+              onChange={handleChange}
+              className="w-full p-3 border rounded-lg"
+            >
+              <option value="">Select Type</option>
+              <option value="Store">Store</option>
+              <option value="Office">Office</option>
+              <option value="Factory">Factory</option>
+              <option value="Others">Others</option>
+            </select>
+          </div>
 
-        <div>
-          <label className="block mb-2 font-medium">Type of Establishment</label>
-          <select
-            name="establishment_type"
-            value={formData.establishment_type || ""}
-            onChange={handleChange}
-            className="w-full p-3 border rounded-lg"
-          >
-            <option value="">Select Type</option>
-            <option value="Store">Store</option>
-            <option value="Office">Office</option>
-            <option value="Factory">Factory</option>
-            <option value="Others">Others</option>
-          </select>
-        </div>
+          
 
-        
-        <div>
-          <label className="block mb-2 font-medium">Land Use Classification</label>
-          <input
-            type="text"
-            name="land_use_classification"
-            value={formData.land_use_classification || ""}
-            onChange={handleChange}
-            className="w-full p-3 border rounded-lg"
-          />
+          {/* NEWLY ADDED FIELDS */}
+          <div>
+            <label className="block mb-2 font-medium">
+              Zoning Permit ID <span className="text-red-500">*</span>
+            </label>
+            <input
+              type="number"
+              name="zoning_permit_id"
+              value={formData.zoning_permit_id || ""}
+              onChange={handleChange}
+              className="w-full p-3 border rounded-lg"
+              required
+            />
+          </div>
+
+          <div>
+            <label className="block mb-2 font-medium">
+              Sanitation Permit ID <span className="text-red-500">*</span>
+            </label>
+            <input
+              type="number"
+              name="sanitation_permit_id"
+              value={formData.sanitation_permit_id || ""}
+              onChange={handleChange}
+              className="w-full p-3 border rounded-lg"
+              required
+            />
+          </div>
         </div>
       </div>
-    </div>
-  );
 
+      {/* SECTION 2: OPERATIONS & EMPLOYMENT DETAILS */}
+      <div>
+        <h3 className="text-xl font-semibold mb-4">Operations & Employment Details</h3>
 
-
-case 4:
-  return (
-    <div className="space-y-6">
-      <h3 className="text-xl font-semibold mb-4">Operations & Employment Details</h3>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {/* Business Area */}
-        <div>
-          <label className="block mb-2 font-medium">Business Area (in sq. m.)</label>
-          <input
-            type="number"
-            name="business_area"
-            value={formData.business_area || ""}
-            onChange={handleChange}
-            className="w-full p-3 border rounded-lg"
-          />
-        </div>
-
-        {/* Total Floor Area */}
-        <div>
-          <label className="block mb-2 font-medium">Total Floor/Building Area (in sq. m.)</label>
-          <input
-            type="number"
-            name="total_floor_area"
-            value={formData.total_floor_area || ""}
-            onChange={handleChange}
-            className="w-full p-3 border rounded-lg"
-          />
-        </div>
-
-        {/* Time of Operation */}
-        <div className="col-span-2">
-          <label className="block mb-2 font-medium">Time of Operation</label>
-          <div className="flex flex-wrap items-center gap-8">
-            {/* From Time */}
-            <div>
-              <span className="block text-sm font-medium mb-1">From:</span>
-              <div className="flex items-center gap-3">
-                <input
-                  type="time"
-                  name="operation_from_time"
-                  value={formData.operation_from_time || ""}
-                  onChange={handleChange}
-                  className="p-2 border rounded-lg"
-                />
-                <div className="flex gap-3">
-                  <label className="flex items-center gap-1">
-                    <input
-                      type="radio"
-                      name="operation_from_ampm"
-                      value="AM"
-                      checked={formData.operation_from_ampm === "AM"}
-                      onChange={handleChange}
-                    />
-                    AM
-                  </label>
-                  <label className="flex items-center gap-1">
-                    <input
-                      type="radio"
-                      name="operation_from_ampm"
-                      value="PM"
-                      checked={formData.operation_from_ampm === "PM"}
-                      onChange={handleChange}
-                    />
-                    PM
-                  </label>
-                </div>
-              </div>
-            </div>
-
-            {/* To Time */}
-            <div>
-              <span className="block text-sm font-medium mb-1">To:</span>
-              <div className="flex items-center gap-3">
-                <input
-                  type="time"
-                  name="operation_to_time"
-                  value={formData.operation_to_time || ""}
-                  onChange={handleChange}
-                  className="p-2 border rounded-lg"
-                />
-                <div className="flex gap-3">
-                  <label className="flex items-center gap-1">
-                    <input
-                      type="radio"
-                      name="operation_to_ampm"
-                      value="AM"
-                      checked={formData.operation_to_ampm === "AM"}
-                      onChange={handleChange}
-                    />
-                    AM
-                  </label>
-                  <label className="flex items-center gap-1">
-                    <input
-                      type="radio"
-                      name="operation_to_ampm"
-                      value="PM"
-                      checked={formData.operation_to_ampm === "PM"}
-                      onChange={handleChange}
-                    />
-                    PM
-                  </label>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Employees Section */}
-        <div>
-          <label className="block mb-2 font-medium">Total No. of Employees in Establishment</label>
-          <input
-            type="number"
-            name="total_employees"
-            value={formData.total_employees || ""}
-            onChange={handleChange}
-            className="w-full p-3 border rounded-lg"
-          />
-        </div>
-
-        <div className="grid grid-cols-2 gap-2">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label className="block mb-2 text-sm font-medium">Male</label>
+            <label className="block mb-2 font-medium">Business Area (in sq. m.)</label>
             <input
               type="number"
-              name="male_employees"
-              value={formData.male_employees || ""}
+              name="business_area"
+              value={formData.business_area || ""}
               onChange={handleChange}
               className="w-full p-3 border rounded-lg"
             />
           </div>
+
           <div>
-            <label className="block mb-2 text-sm font-medium">Female</label>
+            <label className="block mb-2 font-medium">
+              Number of Employees <span className="text-red-500">*</span>
+            </label>
             <input
               type="number"
-              name="female_employees"
-              value={formData.female_employees || ""}
+              name="no_of_employees"
+              value={formData.no_of_employees || ""}
               onChange={handleChange}
               className="w-full p-3 border rounded-lg"
+              required
             />
           </div>
-        </div>
 
-        <div>
-          <label className="block mb-2 font-medium">No. of Employees Residing within LGU</label>
-          <input
-            type="number"
-            name="lgu_resident_employees"
-            value={formData.lgu_resident_employees || ""}
-            onChange={handleChange}
-            className="w-full p-3 border rounded-lg"
-          />
-        </div>
+          <div>
+            <label className="block mb-2 font-medium">
+              Business Operating Hours <span className="text-red-500">*</span>
+            </label>
+            <input
+              type="text"
+              name="operating_hours"
+              value={formData.operating_hours || ""}
+              onChange={handleChange}
+              className="w-full p-3 border rounded-lg"
+              placeholder="e.g. 8:00 AM - 5:00 PM"
+              required
+            />
+          </div>
 
-        {/* Delivery Vehicles Section */}
-        <div>
-          <label className="block mb-2 font-medium">No. of Delivery Vehicles (if applicable)</label>
-          <div className="grid grid-cols-2 gap-2">
-            <div>
-              <label className="block mb-1 text-sm font-medium">Van/Truck</label>
-              <input
-                type="number"
-                name="delivery_van_truck"
-                value={formData.delivery_van_truck || ""}
-                onChange={handleChange}
-                className="w-full p-3 border rounded-lg"
-              />
-            </div>
-            <div>
-              <label className="block mb-1 text-sm font-medium">Motorcycle</label>
-              <input
-                type="number"
-                name="delivery_motorcycle"
-                value={formData.delivery_motorcycle || ""}
-                onChange={handleChange}
-                className="w-full p-3 border rounded-lg"
-              />
-            </div>
+          <div>
+            <label className="block mb-2 font-medium">
+              Type of Operation <span className="text-red-500">*</span>
+            </label>
+            <select
+              name="operation_type"
+              value={formData.operation_type || ""}
+              onChange={handleChange}
+              className="w-full p-3 border rounded-lg"
+              required
+            >
+              <option value="">Select Type</option>
+              <option value="Main Office">Main Office</option>
+              <option value="Branch">Branch</option>
+              <option value="Franchise">Franchise</option>
+            </select>
           </div>
         </div>
       </div>
     </div>
   );
 
-      case 5:
+      case 4:
         return (
           <div className="space-y-6">
             <h3 className="text-xl font-semibold">Clearances & Attachments</h3>
@@ -1197,7 +1044,7 @@ case 4:
           </div>
         );
 
-case 6:
+case 5:
   return (
     <div className="space-y-6">
       <h3 className="text-xl font-semibold text-gray-800">

@@ -68,6 +68,11 @@ const AdminSidebarItems = [
     path: "/admin/barangaypermit",
     subItems: [
       {
+        id: "barangayDashboard",
+        label: "Dashboard",
+        path: "/admin/barangaypermit"
+  },
+        {
         id: "franchiseDashboard",
         label: "Permit Application",
         path: "/admin/requestclearance"

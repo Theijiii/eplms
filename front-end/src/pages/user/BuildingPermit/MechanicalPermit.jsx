@@ -1,6 +1,10 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+
 
 export default function MechanicalPermit() {
+    const navigate = useNavigate();
+  
   const steps = [
     { id: 1, title: 'Project & Owner Info', description: 'Basic mechanical project details' },
     { id: 2, title: 'Engineer & Contractor', description: 'Professional credentials' },
@@ -177,6 +181,13 @@ export default function MechanicalPermit() {
             Apply for a mechanical works permit. Please provide details about the mechanical project and required documents.
           </p>
         </div>
+         <button
+          onClick={() => navigate('/user/building/type')}
+          className="px-4 py-2 rounded-lg text-white font-semibold"
+          style={{ background: '#4CAF50' }}
+        >
+          Change Type
+        </button>
       </div>
 
       {/* Progress Steps */}

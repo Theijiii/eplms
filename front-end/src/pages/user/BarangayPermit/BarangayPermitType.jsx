@@ -1,12 +1,13 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, ArrowLeft } from "lucide-react";
 
 
 export default function BarangayPermitType({ barangay_permit_id }) {
   const [selectedType, setSelectedType] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
+  const [isConfirmBackOpen, setIsConfirmBackOpen] = useState(false); // Back confirmation
   const navigate = useNavigate();
 
   const application_type = [
@@ -131,14 +132,39 @@ export default function BarangayPermitType({ barangay_permit_id }) {
         </div>
       )}
 
+      {/* Back to Dashboard Button */}
       <div className="mt-8 text-center">
         <button
-          onClick={() => navigate('/user/dashboard')}
-          className="text-gray-500 dark:text-slate-400 hover:text-gray-700 dark:hover:text-slate-300 underline"
+          onClick={() => setIsConfirmBackOpen(true)}
+          className="inline-flex items-center gap-2 bg-green-600 hover:bg-orange-500 text-white font-semibold py-2 px-4 rounded-lg transition-colors"
         >
-          ← Back to Dashboard
+          <ArrowLeft size={18} />
+          Back to Dashboard
         </button>
       </div>
+
+      {/* Confirm Back Modal */}
+      {isConfirmBackOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-[1px]">
+          <div className="bg-white dark:bg-slate-800 rounded-lg shadow-xl max-w-lg w-full p-8 text-center">
+            <h3 className="text-2xl font-semibold mb-6">Are you sure you want to go back?</h3>
+            <div className="flex justify-center gap-6">
+              <button
+                onClick={() => setIsConfirmBackOpen(false)}
+                className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-3 px-6 rounded-lg transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => navigate('/user/dashboard')}
+                className="bg-green-600 hover:bg-orange-500 text-white font-semibold py-3 px-6 rounded-lg transition-colors"
+              >
+                Yes, Go Back
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

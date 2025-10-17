@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
+import { useNavigate } from "react-router-dom";
 
 export default function SignagePermit() {
+    const navigate = useNavigate();
+
   const steps = [
     { id: 1, title: 'Applicant & Project Info', description: 'Basic signage project details' },
     { id: 2, title: 'Design & Plans', description: 'Signage design, plans, and computations' },
@@ -203,6 +206,13 @@ export default function SignagePermit() {
             To regulate the installation, construction, and display of signage, billboards, and outdoor advertisements within Quezon City. Ensures that signages are structurally safe, non-obstructive, and compliant with the National Building Code (PD 1096) and QC local ordinances. Prevents hazards to public safety, traffic flow, and city aesthetics.
           </p>
         </div>
+                         <button
+          onClick={() => navigate('/user/building/type')}
+          className="px-4 py-2 rounded-lg text-white font-semibold"
+          style={{ background: '#4CAF50' }}
+        >
+          Change Type
+        </button>
       </div>
 
       {/* Progress Steps */}

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Check, Upload } from 'lucide-react';
 
 export default function Register() {
   const [isCitizen, setIsCitizen] = useState(true);
@@ -162,24 +163,6 @@ export default function Register() {
                 />
               </div>
             )}
-            {/* Full Name */}
-            <div>
-              <label className="block text-xs font-semibold mb-1" style={{ fontFamily: 'Montserrat', color: '#374151' }}>
-                Buong Pangalan
-              </label>
-              <input
-                type="text"
-                value={fullName}
-                onChange={e => setFullName(e.target.value)}
-                className="w-full p-3 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-opacity-50 transition-all"
-                style={{ 
-                  fontFamily: 'Montserrat',
-                  background: colors.background,
-                  focusRingColor: colors.accent
-                }}
-                placeholder="Ilagay ang iyong buong pangalan"
-              />
-            </div>
 
             {/* Email */}
             <div>
@@ -243,25 +226,64 @@ export default function Register() {
               />
             </div>
 
-
-            {/* ID Upload */}
-            <div className="p-3 rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 transition-all duration-200 hover:border-orange-400">
+            {/* Full Name */}
+            <div>
               <label className="block text-xs font-semibold mb-1" style={{ fontFamily: 'Montserrat', color: '#374151' }}>
-                Mag-upload ng Valid ID *
+                Buong Pangalan <span className="text-gray-500 font-normal">(opsyonal)</span>
               </label>
               <input
-                type="file"
-                onChange={handleIdChange}
-                accept=".pdf,.jpg,.jpeg,.png"
-                className="w-full p-1 text-xs border border-gray-300 rounded transition-all duration-200 hover:border-orange-400"
-                style={{ fontFamily: 'Montserrat' }}
+                type="text"
+                value={fullName}
+                onChange={e => setFullName(e.target.value)}
+                className="w-full p-3 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-opacity-50 transition-all"
+                style={{ 
+                  fontFamily: 'Montserrat',
+                  background: colors.background,
+                  focusRingColor: colors.accent
+                }}
+                placeholder="Ilagay ang iyong buong pangalan"
               />
-              <p className="text-xs text-gray-500 mt-1" style={{ fontFamily: 'Montserrat' }}>
-                Kinakailangan para sa verification. Mga format: PDF, JPG, JPEG, PNG.
+            </div>
+
+            {/* ID Upload */}
+            <div className="p-4 rounded-lg border-2 border-dashed border-green-200 transition-all duration-200 hover:border-green-400"
+                 style={{ background: '#F0F9F4' }}>
+              <label className="block text-xs font-semibold mb-2 text-center" style={{ fontFamily: 'Montserrat', color: '#065F46' }}>
+                <div className="flex items-center justify-center gap-2 mb-1">
+                  <Upload size={16} style={{ color: '#059669' }} />
+                  Mag-upload ng Valid ID *
+                </div>
+              </label>
+              
+              <label className="cursor-pointer block">
+                <div className="flex flex-col items-center justify-center p-4 rounded border-2 border-dashed border-green-300 hover:border-green-500 transition-all duration-200"
+                     style={{ background: '#DCFCE7' }}>
+                  <Upload size={24} style={{ color: '#059669', marginBottom: '8px' }} />
+                  <span className="text-sm font-medium text-center" style={{ color: '#065F46', fontFamily: 'Montserrat' }}>
+                    Pindutin para pumili ng file
+                  </span>
+                  <span className="text-xs text-center mt-1" style={{ color: '#047857', fontFamily: 'Montserrat' }}>
+                    PDF, JPG, JPEG, PNG
+                  </span>
+                </div>
+                <input
+                  type="file"
+                  onChange={handleIdChange}
+                  accept=".pdf,.jpg,.jpeg,.png"
+                  className="hidden"
+                />
+              </label>
+              
+              <p className="text-xs text-green-700 mt-2 text-center" style={{ fontFamily: 'Montserrat' }}>
+                Kinakailangan para sa verification
               </p>
+              
               {idFile && (
-                <div className="mt-1 text-xs font-semibold" style={{ color: colors.accent, fontFamily: 'Montserrat' }}>
-                  ✅ {idFile.name}
+                <div className="mt-3 p-2 rounded bg-green-100 border border-green-200 flex items-center gap-2">
+                  <Check size={16} style={{ color: '#059669' }} />
+                  <span className="text-xs font-semibold flex-1" style={{ color: '#065F46', fontFamily: 'Montserrat' }}>
+                    {idFile.name}
+                  </span>
                 </div>
               )}
             </div>

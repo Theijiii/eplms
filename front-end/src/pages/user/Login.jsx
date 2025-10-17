@@ -147,19 +147,30 @@ export default function Login() {
   };
 
   const handleOtpSubmit = (e) => {
-    e.preventDefault();
-    setOtpError("");
-    setOtpSuccess("");
+  e.preventDefault();
+  setOtpError("");
+  setOtpSuccess("");
+  
+  const otpString = otp.join('');
+  
+  if (otpString.length !== 6) {
+    setOtpError("Please enter the complete 6-digit OTP.");
+    return;
+  }
+
+  // Check if loginData exists and determine the correct OTP based on username
+  if (loginData) {
+    let correctOtp = "";
     
-    const otpString = otp.join('');
-    
-    if (otpString.length !== 6) {
-      setOtpError("Please enter the complete 6-digit OTP.");
-      return;
+    // Set different OTP codes for admin vs user
+    if (loginData.username === "admin@eplms.com") {
+      correctOtp = "121803"; // Admin OTP
+    } else if (loginData.username === "user@eplms.com") {
+      correctOtp = "061423"; // User OTP
     }
 
-    // Demo OTP validation - in real app, this would be verified with backend
-    if (otpString === "061423") { // Demo OTP
+    // Demo OTP validation
+    if (otpString === correctOtp) {
       setOtpSuccess("OTP verified successfully!");
       
       setTimeout(() => {
@@ -175,7 +186,10 @@ export default function Login() {
     } else {
       setOtpError("Invalid OTP code. Please try again.");
     }
-  };
+  } else {
+    setOtpError("Login session expired. Please login again.");
+  }
+};
 
   const handleResendOtp = () => {
     if (countdown > 0) return;

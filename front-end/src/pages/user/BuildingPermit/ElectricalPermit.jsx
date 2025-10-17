@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 export default function ElectricalPermit() {
+  const navigate = useNavigate();
   const steps = [
     { id: 1, title: 'Project & Owner Info', description: 'Basic electrical project details' },
     { id: 2, title: 'Engineer/Electrician Info', description: 'Professional credentials' },
@@ -200,7 +202,15 @@ export default function ElectricalPermit() {
           <p className="mt-2" style={{ color: '#9aa5b1' }}>
             Apply for an electrical works permit. Please provide details about the electrical project and required documents.
           </p>
+
         </div>
+                          <button
+          onClick={() => navigate('/user/building/type')}
+          className="px-4 py-2 rounded-lg text-white font-semibold"
+          style={{ background: '#4CAF50' }}
+        >
+          Change Type
+        </button>
       </div>
 
       {/* Progress Steps */}

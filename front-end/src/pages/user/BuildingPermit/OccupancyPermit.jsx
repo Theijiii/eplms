@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-
+import { useNavigate } from 'react-router-dom';
 export default function OccupancyPermit() {
+  const navigate = useNavigate();
   const steps = [
     { id: 1, title: 'Project & Owner Info', description: 'Basic occupancy details' },
     { id: 2, title: 'Professional & Completion', description: 'Supervising professionals and completion certificates' },
@@ -193,6 +194,13 @@ export default function OccupancyPermit() {
             Grants authorization from the Office of the Building Official (OBO) to use and occupy a completed building or structure. Ensures construction was done in accordance with approved plans, permits, and the National Building Code (PD 1096). Certifies that the building is safe and compliant with all building, fire, sanitation, and zoning regulations.
           </p>
         </div>
+                 <button
+          onClick={() => navigate('/user/building/type')}
+          className="px-4 py-2 rounded-lg text-white font-semibold"
+          style={{ background: '#4CAF50' }}
+        >
+          Change Type
+        </button>
       </div>
 
       {/* Progress Steps */}

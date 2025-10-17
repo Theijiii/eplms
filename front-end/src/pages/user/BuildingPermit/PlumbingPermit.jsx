@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
-
+import { useNavigate } from 'react-router-dom';
 export default function PlumbingPermit() {
+    const navigate = useNavigate();
+  
   const steps = [
     { id: 1, title: 'Project Information', description: 'Basic plumbing project details' },
     { id: 2, title: 'Plumber Credentials', description: 'Master Plumber details' },
@@ -174,6 +176,13 @@ export default function PlumbingPermit() {
             Apply for a sanitary/plumbing works permit. Please provide details about the plumbing project and required documents.
           </p>
         </div>
+                         <button
+          onClick={() => navigate('/user/building/type')}
+          className="px-4 py-2 rounded-lg text-white font-semibold"
+          style={{ background: '#4CAF50' }}
+        >
+          Change Type
+        </button>
       </div>
 
       {/* Progress Steps */}

@@ -7,6 +7,7 @@ export default function BusPermitType({ business_permit_id }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
   const [isConfirmBackOpen, setIsConfirmBackOpen] = useState(false); // Back confirmation
+  const [isBarangayModalOpen, setIsBarangayModalOpen] = useState(false); // Barangay permit modal
   const navigate = useNavigate();
 
   const application_type = [
@@ -15,14 +16,13 @@ export default function BusPermitType({ business_permit_id }) {
     { id: 'SPECIAL', title: 'SPECIAL', description: 'Apply for special business permit or exemption', color: 'bg-purple-500 hover:bg-purple-600' },
     { id: 'LIQUOR_PERMIT', title: 'LIQUOR PERMIT', description: 'Apply for liquor license and related permits', color: 'bg-red-500 hover:bg-red-600' },
     { id: 'AMENDMENT', title: 'AMENDMENT', description: 'Make changes to your existing business permit', color: 'bg-yellow-500 hover:bg-yellow-600' },
-
   ];
 
-const handleTypeSelection = (typeId) => {
-  setSelectedType(typeId);
-  setIsModalOpen(true); // Always open modal for any permit type
-};
-
+  const handleTypeSelection = (typeId) => {
+    setSelectedType(typeId);
+    // Open Barangay Permit modal first
+    setIsBarangayModalOpen(true);
+  };
 
   const handleContinue = () => {
     setIsModalOpen(false);
@@ -60,6 +60,42 @@ const handleTypeSelection = (typeId) => {
           </div>
         ))}
       </div>
+
+      {/* Barangay Permit Modal */}
+{/* Barangay Permit Modal */}
+{/* Barangay Permit Modal */}
+{isBarangayModalOpen && (
+  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-[1px]">
+    <div className="bg-[#FBFBFB] dark:bg-slate-800 rounded-lg shadow-xl max-w-md w-full p-8 text-center min-h-[300px]">
+      <h3 className="text-2xl font-semibold mb-4">Do you have an existing Barangay Permit?</h3>
+      <p className="text-gray-600 dark:text-slate-300 mb-8">
+        Before applying for a business permit, we need to check if you already have a valid Barangay Permit.
+        If you don't have one, you will be redirected to the Barangay Permit application page.
+      </p>
+      <div className="flex justify-center gap-6">
+        {/* Yes button - Green */}
+        <button
+          onClick={() => {
+            setIsBarangayModalOpen(false);
+            setIsModalOpen(true); // Continue to the main permit modal
+          }}
+          className="bg-[#4CAF50] hover:bg-[#FDA811] text-white font-semibold py-3 px-8 rounded-lg transition-colors"
+        >
+          Yes
+        </button>
+
+        {/* No button - Blue */}
+        <button
+          onClick={() => navigate('/user/barangay/type')}
+          className="bg-[#4A90E2] hover:bg-[#FDA811] text-white font-semibold py-3 px-8 rounded-lg transition-colors"
+        >
+          No
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+
 
       {/* Selection Modal */}
       {isModalOpen && (
