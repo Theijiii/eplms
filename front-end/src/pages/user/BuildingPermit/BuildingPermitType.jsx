@@ -6,6 +6,7 @@ export default function BuildingPermitType({ building_permit_id }) {
   const [selectedType, setSelectedType] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
+  const [isConfirmBackOpen, setIsConfirmBackOpen] = useState(false);
   const navigate = useNavigate();
 
   const permit_type = [
@@ -20,20 +21,14 @@ export default function BuildingPermitType({ building_permit_id }) {
     { id: 'OCCUPANCY', title: 'Occupancy', description: 'Occupancy permit', color: 'bg-pink-500 hover:bg-pink-600' },
     { id: 'ELECTRONICS', title: 'Electronics', description: 'Electronics works', color: 'bg-blue-500 hover:bg-blue-600' },
     { id: 'SIGNAGE', title: 'Signage', description: 'Signage works', color: 'bg-lime-500 hover:bg-lime-600' },
-    { id: 'PROFESSIONAL', title: 'Professional', description: 'Signage works', color: 'bg-lime-500 hover:bg-lime-600' },
+    { id: 'PROFESSIONAL', title: 'Professional / Engineer', description: 'Register yourself as a professional or engineer to be available for building projects.', color: 'bg-orange-500 hover:bg-orange-600' },
   ];
 
-  const handleTypeSelection = (typeId) => {
-    // 🔹 Commented out condition (can re-enable later)
-    /*
-    if (!building_permit_id && typeId !== 'NEW') {
-      setIsConfirmModalOpen(true);
-      return;
-    }
-    */
-    setSelectedType(typeId);
-    setIsModalOpen(true);
-  };
+const handleTypeSelection = (typeId) => {
+  setSelectedType(typeId);
+  setIsModalOpen(true); // Always open modal for any permit type
+};
+
 
   const handleContinue = () => {
     setIsModalOpen(false);
@@ -50,7 +45,7 @@ export default function BuildingPermitType({ building_permit_id }) {
       OCCUPANCY: '/user/building/occupancy',
       ELECTRONICS: '/user/building/electronics',
       SIGNAGE: '/user/building/signage',
-    };
+      PROFESSIONAL: '/user/building/professional',    };
 
     navigate(routeMap[selectedType] || '/user/building/new', {
       state: { permitType: selectedType },
@@ -62,153 +57,105 @@ export default function BuildingPermitType({ building_permit_id }) {
     navigate('/user/building/new', { state: { permitType: 'NEW' } });
   };
 
-  const handleConfirmNo = () => {
-    setIsConfirmModalOpen(false);
-  };
+  const handleConfirmNo = () => setIsConfirmModalOpen(false);
 
   return (
-    <div className="mx-1 mt-1 p-6 dark:bg-slate-900 bg-white dark:text-slate-300 rounded-lg min-h-screen">
-      <h1 className="text-2xl md:text-4xl font-bold mb-8 text-center">
-        Building Permit Types
-      </h1>
-      <p className="mb-6 text-center">
-        Please select the type of Building permit you need to apply for
-      </p>
+    <>
+      <div className="mx-1 mt-1 p-6 dark:bg-slate-900 bg-white dark:text-slate-300 rounded-lg min-h-screen">
+        <h1 className="text-2xl md:text-4xl font-bold mb-8 text-center">
+          Building Permit Types
+        </h1>
+        <p className="mb-6 text-center">
+          Please select the type of Building permit you need to apply for
+        </p>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full mt-6">
-        {permit_type.map((type) => (
-          <div
-            key={type.id}
-            onClick={() => handleTypeSelection(type.id)}
-            className="cursor-pointer rounded-lg border border-secondary px-5 py-4 transition-colors shadow-lg flex flex-col justify-between h-full"
-            style={{ background: '#fbfbfb', color: '#222', borderColor: '#9aa5b1' }}
-            onMouseOver={e => {
-              e.currentTarget.style.background = '#4a90e2';
-              e.currentTarget.style.color = '#222';
-              e.currentTarget.style.borderColor = '#4a90e2';
-            }}
-            onMouseOut={e => {
-              e.currentTarget.style.background = '#fbfbfb';
-              e.currentTarget.style.color = '#222';
-              e.currentTarget.style.borderColor = '#9aa5b1';
-            }}
+        {/* ✅ Permit Type Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full mt-6">
+          {permit_type.map((type) => (
+            <div
+              key={type.id}
+              onClick={() => handleTypeSelection(type.id)}
+              className={`group cursor-pointer rounded-lg border border-gray-200 bg-white px-5 py-4 shadow-sm transition-all duration-200 hover:shadow-md hover:border-blue-400 hover:bg-blue-100`}
+            >
+              <h2 className="mb-3 text-2xl font-semibold flex items-center justify-between text-gray-800">
+                {type.title}
+                <ArrowRight className="ml-2 w-5 h-5 transition-transform duration-200 group-hover:translate-x-1" />
+              </h2>
+              <p className="m-0 max-w-[30ch] text-sm text-gray-600">{type.description}</p>
+            </div>
+          ))}
+        </div>
+
+        {/* ✅ Back Button */}
+        <div className="mt-8 text-center">
+          <button
+            onClick={() => setIsConfirmBackOpen(true)}
+            className="inline-flex items-center gap-2 bg-green-600 hover:bg-orange-500 text-white font-semibold py-2 px-4 rounded-lg transition-colors"
           >
-            <h2 className="mb-3 text-2xl font-semibold flex items-center justify-between" style={{ color: '#222' }}>
-              {type.title}
-              <ArrowRight className="ml-2 w-5 h-5 transition-transform group-hover:translate-x-1 motion-reduce:transform-none" />
-            </h2>
-            <p className="m-0 max-w-[30ch] text-sm opacity-70" style={{ color: '#222' }}>{type.description}</p>
-          </div>
-        ))}
-
-        {/* Professional Registration Box */}
-        <div
-          className="cursor-pointer rounded-lg border border-secondary px-5 py-4 transition-colors shadow-lg flex flex-col justify-between h-full"
-          style={{ background: '#fbfbfb', color: '#222', borderColor: '#9aa5b1' }}
-          onMouseOver={e => {
-            e.currentTarget.style.background = '#4a90e2';
-            e.currentTarget.style.color = '#222';
-            e.currentTarget.style.borderColor = '#4a90e2';
-          }}
-          onMouseOut={e => {
-            e.currentTarget.style.background = '#fbfbfb';
-            e.currentTarget.style.color = '#222';
-            e.currentTarget.style.borderColor = '#9aa5b1';
-          }}
-          onClick={() => navigate('/user/professionalregistration')}
-        >
-          <h2 className="mb-3 text-2xl font-semibold flex items-center justify-between" style={{ color: '#222' }}>
-            Register Professional/Engineer
-            <ArrowRight className="ml-2 w-5 h-5 transition-transform group-hover:translate-x-1 motion-reduce:transform-none" />
-          </h2>
-          <p className="m-0 max-w-[30ch] text-sm opacity-70" style={{ color: '#222' }}>
-            Register yourself as a professional or engineer to be available for building projects.
-          </p>
+            <ArrowLeft size={18} />
+            Back to Dashboard
+          </button>
         </div>
-      </div>
 
-      {/* ✅ Selection Modal */}
-      {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-[1px]">
-          <div className="bg-white dark:bg-slate-800 rounded-lg shadow-xl max-w-md w-full p-6">
-            <h3 className="text-xl font-semibold mb-2">Selected Permit Type</h3>
-            <p className="text-gray-600 dark:text-slate-300 mb-4">
-              You have selected:{" "}
-              <span className="font-bold text-blue-600">
-                {permit_type.find(t => t.id === selectedType)?.title}
-              </span>
-            </p>
-            <p className="text-sm text-gray-500 dark:text-slate-400 mb-6">
-              {permit_type.find(t => t.id === selectedType)?.description}
-            </p>
-
-            <div className="flex justify-end gap-4">
-              <button
-                onClick={() => setIsModalOpen(false)}
-                className="bg-gray-300 text-gray-800 font-semibold py-2 px-4 rounded-lg transition"
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor = "#FDA811";
-                  e.currentTarget.style.color = "#FFFFFF";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = "#D1D5DB";
-                  e.currentTarget.style.color = "#1F2937";
-                }}
-              >
-                Cancel
-              </button>
-
-              <button
-                onClick={handleContinue}
-                className="text-white font-semibold py-2 px-4 rounded-lg transition"
-                style={{ backgroundColor: "#4CAF50" }}
-                onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "#FDA811")}
-                onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "#4CAF50")}
-              >
-                Continue
-              </button>
+        {/* ✅ Confirm Back Modal */}
+        {isConfirmBackOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-[1px]">
+            <div className="bg-white dark:bg-slate-800 rounded-lg shadow-xl max-w-lg w-full p-8 text-center">
+              <h3 className="text-2xl font-semibold mb-6">
+                Are you sure you want to go back?
+              </h3>
+              <div className="flex justify-center gap-6">
+                <button
+                  onClick={() => setIsConfirmBackOpen(false)}
+                  className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-3 px-6 rounded-lg transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={() => navigate('/user/dashboard')}
+                  className="bg-green-600 hover:bg-orange-500 text-white font-semibold py-3 px-6 rounded-lg transition-colors"
+                >
+                  Yes, Go Back
+                </button>
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
 
-      {/* ✅ Confirmation Modal (Commented Out for Now) */}
-      {/*
-      {isConfirmModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-[1px]">
-          <div className="bg-white dark:bg-slate-800 rounded-lg shadow-xl max-w-md w-full p-6">
-            <h3 className="text-xl font-semibold mb-4">No Existing Building Permit</h3>
-            <p className="text-gray-600 dark:text-slate-300 mb-6">
-              You must apply for a NEW Building Permit first. Do you want to apply now?
-            </p>
-            <div className="flex justify-end gap-4">
-              <button
-                onClick={handleConfirmNo}
-                className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-2 px-4 rounded-lg"
-              >
-                No
-              </button>
-              <button
-                onClick={handleConfirmYes}
-                className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg"
-              >
-                Yes
-              </button>
+        {/* ✅ Selection Modal */}
+        {isModalOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-[1px]">
+            <div className="bg-white dark:bg-slate-800 rounded-lg shadow-xl max-w-md w-full p-6">
+              <h3 className="text-xl font-semibold mb-2">Selected Permit Type</h3>
+              <p className="text-gray-600 dark:text-slate-300 mb-4">
+                You have selected:{" "}
+                <span className="font-bold text-blue-600">
+                  {permit_type.find(t => t.id === selectedType)?.title}
+                </span>
+              </p>
+              <p className="text-sm text-gray-500 dark:text-slate-400 mb-6">
+                {permit_type.find(t => t.id === selectedType)?.description}
+              </p>
+
+              <div className="flex justify-end gap-4">
+                <button
+                  onClick={() => setIsModalOpen(false)}
+                  className="bg-gray-300 text-gray-800 font-semibold py-2 px-4 rounded-lg transition"
+                >
+                  Cancel
+                </button>
+
+                <button
+                  onClick={handleContinue}
+                  className="bg-green-600 hover:bg-orange-500 text-white font-semibold py-2 px-4 rounded-lg transition"
+                >
+                  Continue
+                </button>
+              </div>
             </div>
           </div>
-        </div>
-      )}
-      */}
-
-      <div className="mt-8 text-center">
-        <button
-          onClick={() => navigate('/user/dashboard')}
-          className="inline-flex items-center gap-2 text-gray-500 dark:text-slate-400 hover:text-gray-700 dark:hover:text-slate-300 underline"
-        >
-          <ArrowLeft size={18} />
-          Back to Dashboard
-        </button>
+        )}
       </div>
-    </div>
+    </>
   );
 }

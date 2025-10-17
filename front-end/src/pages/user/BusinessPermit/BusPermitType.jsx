@@ -33,7 +33,7 @@ const handleTypeSelection = (typeId) => {
       LIQUOR_PERMIT: '/user/business/liquor',
       AMENDMENT: '/user/business/amendment',
     };
-
+    
     navigate(routeMap[selectedType] || '/user/business/new', {
       state: { application_type: selectedType }
     });

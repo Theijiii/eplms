@@ -82,7 +82,7 @@ export default function FranchiseRenewal() {
           form.append(key, value);
         }
       });
-      const response = await fetch('/api/Franchise-permit/renewal', {
+      const response = await fetch('/api/Franchise-permit.php', {
         method: 'POST',
         body: form
       });

@@ -11,7 +11,6 @@ export default function BarangayPermitType({ barangay_permit_id }) {
 
   const application_type = [
     { id: 'NEW', title: 'NEW', description: 'Apply for a new barangay permit', color: 'bg-green-500 hover:bg-green-600' },
-    { id: 'RENEWAL', title: 'RENEWAL', description: 'Renew your existing barangay permit', color: 'bg-blue-500 hover:bg-blue-600' },
 
   ];
 
@@ -31,7 +30,6 @@ export default function BarangayPermitType({ barangay_permit_id }) {
 
     const routeMap = {
       NEW: '/user/barangay/new',
-      RENEWAL: '/user/barangay/renewal',
     };
 
     navigate(routeMap[selectedType] || '/user/barangay/new', { 
@@ -54,7 +52,7 @@ export default function BarangayPermitType({ barangay_permit_id }) {
         Barangay Permit Types
       </h1>
       <p className="mb-6 text-center">
-        Please select the type of barangay permit you need to apply for
+        Apply for your Barangay Clearance with fast, secure, and direct barangay verification.
       </p>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full mt-6">

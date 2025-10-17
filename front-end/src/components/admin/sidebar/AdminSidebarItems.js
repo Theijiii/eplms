@@ -73,12 +73,7 @@ const AdminSidebarItems = [
         path: "/admin/requestclearance"
   }]
   },
-  {
-    id: "PermitTracker",
-    label: "Permit Tracker",
-    icon: Search,
-    path: "/admin/permittracker"
-  },
+
 ]
 
 export default AdminSidebarItems
