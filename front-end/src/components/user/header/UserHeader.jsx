@@ -42,7 +42,7 @@ export default function UserHeader({ username = "User" }) {
         {/* LEFT: Logo + Title */}
         <div className="flex items-center gap-3">
           <img
-            src="/GSM_logo.png"
+            src="GSM_logo.png"
             alt="Logo"
             className="w-12 h-12 object-contain cursor-pointer hover:opacity-90 transition"
           />

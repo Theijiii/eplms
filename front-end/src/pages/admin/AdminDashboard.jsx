@@ -100,7 +100,7 @@ export default function AdminDashboard() {
           <div className="h-[300px]">
             <Bar
               data={{
-                labels: ["Business", "Franchise", "Building", "Health"],
+                labels: ["Business", "Franchise", "Building", "Barangay"],
                 datasets: [
                   {
                     label: "Applications",

@@ -3,23 +3,41 @@ session_start();
 header('Content-Type: application/json; charset=utf-8');
 ob_start();
 
-// ✅ Show errors for debugging (disable in production)
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
 
-// ✅ --- Database ---
+// ✅ Handle preflight (OPTIONS) request
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(200);
+    exit();
+}
+
+// ✅ --- Database Connection ---
 $targetDb = 'eplms_franchise_applications';
 include '../../connection.php';
 
-// ✅ --- Helper ---
+// Check if connection is successful
+if (!$conn) {
+    echo json_encode(["success" => false, "message" => "Database connection failed"]);
+    exit();
+}
+
+// ✅ --- Helper Function ---
 function sanitize($data) {
+    if ($data === null || $data === '') return '';
     return htmlspecialchars(trim($data), ENT_QUOTES, 'UTF-8');
 }
 
-// ✅ --- File Upload Setup ---
+// ✅ --- Upload Folder ---
 $uploadDir = __DIR__ . "/uploads/";
-if (!file_exists($uploadDir)) mkdir($uploadDir, 0777, true);
+if (!file_exists($uploadDir)) {
+    mkdir($uploadDir, 0777, true);
+}
 
+// ✅ --- Debug: Log received data ---
+error_log("=== FORM DATA RECEIVED ===");
+error_log("POST data: " . print_r($_POST, true));
+error_log("FILES data: " . print_r($_FILES, true));
+
+// ✅ --- Allowed File Fields ---
 $fileFields = [
     'proof_of_residency', 'barangay_clearance', 'toda_endorsement', 'lto_or_cr',
     'insurance_certificate', 'drivers_license', 'emission_test', 'id_picture',
@@ -30,89 +48,95 @@ $fileFields = [
 
 $uploadedFiles = [];
 foreach ($fileFields as $f) {
-    if (!empty($_FILES[$f]['tmp_name']) && $_FILES[$f]['error'] === UPLOAD_ERR_OK) {
+    if (isset($_FILES[$f]) && $_FILES[$f]['error'] === UPLOAD_ERR_OK) {
         $fileTmp = $_FILES[$f]['tmp_name'];
-        $fileName = time() . "_" . basename($_FILES[$f]['name']);
+        $fileName = time() . "_" . preg_replace('/[^a-zA-Z0-9._-]/', '_', basename($_FILES[$f]['name']));
+
+        // ✅ Validate file type
+        $allowedExtensions = ['jpg', 'jpeg', 'png', 'pdf'];
+        $ext = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
+        if (!in_array($ext, $allowedExtensions)) {
+            echo json_encode(["success" => false, "message" => "Invalid file type for $f"]);
+            exit();
+        }
+
+        // ✅ Move file to uploads folder
         if (move_uploaded_file($fileTmp, $uploadDir . $fileName)) {
             $uploadedFiles[$f] = $fileName;
         }
     }
 }
 
-// ✅ --- Collect Fields ---
+// ✅ --- Process Form Fields ---
 $formData = [];
+
+// Process all POST fields
 foreach ($_POST as $key => $val) {
-    $formData[$key] = sanitize($val);
-}
-
-// ✅ --- Required Fields ---
-$requiredFields = [
-    'full_name', 'home_address', 'contact_number', 'email',
-    'citizenship', 'birth_date', 'id_type', 'id_number',
-    'make_brand', 'model', 'engine_number', 'chassis_number',
-    'plate_number', 'year_acquired', 'color', 'vehicle_type',
-    'lto_or_number', 'lto_cr_number', 'lto_expiration_date', 'mv_file_number',
-    'toda_name', 'route_zone', 'barangay_of_operation', 'district',
-    'applicant_signature', 'barangay_captain_signature', 'date_submitted'
-];
-
-foreach ($requiredFields as $f) {
-    if (!isset($formData[$f])) {
-        $formData[$f] = '';
-    }
-}
-
-// ✅ --- Handle Dates ---
-$dateFields = ['birth_date', 'lto_expiration_date', 'date_submitted'];
-foreach ($dateFields as $d) {
-    if (empty($formData[$d]) || $formData[$d] === '0000-00-00') {
-        $formData[$d] = date('Y-m-d');
-    }
-}
-
-// ✅ --- Handle Integers ---
-$intFields = ['year_acquired'];
-foreach ($intFields as $i) {
-    if (empty($formData[$i]) || !is_numeric($formData[$i])) {
-        $formData[$i] = 0;
+    if ($val === '1' || $val === '0') {
+        $formData[$key] = intval($val);
+    } else if ($val === 'true' || $val === 'false') {
+        $formData[$key] = $val === 'true' ? 1 : 0;
     } else {
-        $formData[$i] = intval($formData[$i]);
+        $formData[$key] = sanitize($val);
     }
 }
 
-// ✅ Include uploaded files
-$formData['file_attachments'] = json_encode($uploadedFiles, JSON_UNESCAPED_SLASHES);
+// ✅ Add uploaded file data as JSON
+if (!empty($uploadedFiles)) {
+    $formData['file_attachments'] = json_encode($uploadedFiles, JSON_UNESCAPED_SLASHES);
+} else {
+    $formData['file_attachments'] = '[]';
+}
 
-// ✅ Default submission timestamp
+// ✅ Add submission date if missing
 if (empty($formData['date_submitted'])) {
     $formData['date_submitted'] = date("Y-m-d H:i:s");
 }
 
-// ✅ Remove unused frontend fields
+// ✅ Remove any unused fields
 unset($formData['attachments']);
 
-// ✅ --- Build SQL ---
+// ✅ --- Debug: Log processed data ---
+error_log("Processed form data: " . print_r($formData, true));
+
+// ✅ --- Insert Into Database ---
 $table = "franchise_applications";
-$columns = implode(", ", array_keys($formData));
 
-$values = implode(", ", array_map(function($v) use ($conn) {
-    if (is_null($v)) return "NULL";
-    return "'" . $conn->real_escape_string($v) . "'";
-}, array_values($formData)));
+// Build the SQL query safely
+$columns = [];
+$values = [];
+$placeholders = [];
 
-$sql = "INSERT INTO `$table` ($columns) VALUES ($values)";
+foreach ($formData as $key => $value) {
+    $columns[] = "`$key`";
+    $values[] = $conn->real_escape_string($value);
+    $placeholders[] = "'" . $conn->real_escape_string($value) . "'";
+}
 
-// ✅ --- Execute ---
+$columnsStr = implode(", ", $columns);
+$valuesStr = implode(", ", $placeholders);
+
+$sql = "INSERT INTO $table ($columnsStr) VALUES ($valuesStr)";
+
+error_log("SQL Query: " . $sql);
+
 if ($conn->query($sql)) {
-    echo json_encode(["success" => true, "message" => "Application submitted successfully."]);
-} else {
+    $application_id = $conn->insert_id;
     echo json_encode([
-        "success" => false,
+        "success" => true, 
+        "message" => "Application submitted successfully.",
+        "application_id" => $application_id
+    ]);
+} else {
+    error_log("Database error: " . $conn->error);
+    echo json_encode([
+        "success" => false, 
         "message" => "Database error: " . $conn->error,
-        "sql" => $sql
+        "sql_error" => $conn->error
     ]);
 }
 
+// ✅ Close connection
 $conn->close();
 ob_end_flush();
 exit;

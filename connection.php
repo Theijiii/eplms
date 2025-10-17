@@ -16,7 +16,12 @@ $databases = [
 ];
 
 // ✅ Determine target database (use ?db= parameter or default)
+$targetDb = $_GET['db'] ?? 'eplms_applicants_db';
+$targetDb = $_GET['db'] ?? 'eplms_barangay_clearance_db';
+$targetDb = $_GET['db'] ?? 'eplms_building_permit_system';
 $targetDb = $_GET['db'] ?? 'eplms_franchise_applications';
+$targetDb = $_GET['db'] ?? 'eplms_business_permit_system';
+
 
 if (!isset($databases[$targetDb])) {
     http_response_code(400);

@@ -1,47 +1,10 @@
-# ========================
-# ENABLE REWRITE ENGINE
-# ========================
 <IfModule mod_rewrite.c>
-    Options +FollowSymLinks
     RewriteEngine On
-</IfModule>
 
-# ========================
-# CORS CONFIGURATION
-# ========================
-<IfModule mod_headers.c>
-    # Detect API requests
-    SetEnvIf Request_URI "^/back-end/api/" IS_API_REQUEST
+    # Serve existing files as-is
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
 
-    # Allow both live and local origins (optional)
-    Header always set Access-Control-Allow-Origin "https://e-plms.goserveph.com" env=IS_API_REQUEST
-    Header always set Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS, PATCH" env=IS_API_REQUEST
-    Header always set Access-Control-Allow-Headers "Content-Type, Authorization, X-Requested-With, X-Auth-Token" env=IS_API_REQUEST
-    Header always set Access-Control-Allow-Credentials "true" env=IS_API_REQUEST
-    Header always set Access-Control-Max-Age "86400" env=IS_API_REQUEST
-
-    # Handle OPTIONS requests (CORS preflight)
-    RewriteCond %{REQUEST_METHOD} OPTIONS
-    RewriteCond %{REQUEST_URI} ^/back-end/api/ [NC]
-    RewriteRule ^ - [R=200,L]
-</IfModule>
-
-# ========================
-# ROUTING RULES
-# ========================
-<IfModule mod_rewrite.c>
-    # 1️⃣ Serve existing files or directories
-    RewriteCond %{REQUEST_FILENAME} -f [OR]
-    RewriteCond %{REQUEST_FILENAME} -d
-    RewriteRule ^ - [L]
-
-    # 2️⃣ Serve static assets (adjust if using Vite or React build)
-    RewriteRule ^(.*\.(js|css|png|jpg|jpeg|svg|ico|webp|gif|woff|woff2|ttf|eot))$ dist/$1 [L]
-
-    # 3️⃣ Allow PHP API access (don’t rewrite these)
-    RewriteCond %{REQUEST_URI} ^/back-end/api/ [NC]
-    RewriteRule ^ - [L]
-
-    # 4️⃣ Fallback for SPA (React/Vite)
-    RewriteRule ^ dist/index.html [L]
+    # Route everything else to index.html
+    RewriteRule ^ index.html [L]
 </IfModule>
